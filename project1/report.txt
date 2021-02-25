@@ -1,0 +1,89 @@
+1. Enter the number of hours it took you to complete the project between
+   the <<< and >>> signs below (eg, <<<10>>>).
+
+   <<<15>>>
+   
+2. Enter the difficulty level (1: very easy; 5: very difficult) of the project
+   between the <<< and >>> signs below (eg, <<<3>>>).
+
+   <<<4>>>
+
+3. Provide a short description of how you approached each problem, issues you 
+   encountered, and how you resolved those issues.
+
+   Problem 1 (Using CLEmitter)
+      Approach:
+      Exercise 4 of the chapter's notes helped me understand the stack
+      frame and how some of the JVM instructions worked. I used the
+      GenFactorial.java file along with the JVM instruction set documentation
+      and CLEmitter documentation to build out GenIsPrime.java. I traced out
+      the stack frame through the code to make sense of all the operations.
+
+      Issues and resolution:
+      My first build built a class GenIsPrime.class; it was a simple fix
+      to get it to generate IsPrime.class for submission.
+
+   Problem 2 (Arithmetic Operations)
+      Approach:
+      Divide implementation was detailed in the chapter exercises. I followed
+      this template to code the remainder op nearly identically.
+
+      Issues and resolution:
+      During testing I ran into an error message at compilation.
+      I searched for that error message through the files I edited and
+      found that my issue was in Parser.java. I fixed my issue with
+      modifying additiveExpression() to account for the JPlusOp().
+
+   Problem 3 (Bitwise Operations)
+      Approach:
+      Studying both the base j-- and Java syntactic grammar was crucial for
+      finding out how to modify parser here. I was able to add additional
+      methods in Parser.java to expand the syntactic grammar.
+
+      Issues and resolution:
+      I ran into no issues with these implementations.
+
+   Problem 4 (Shift Operations)
+      Approach:
+      The approach here was the same as above; I figured out where I needed
+      to build out j-- to more resemble Java's syntactic grammar. The
+      relationalExpression grammar was tricky; it branched to either be
+      instanceof referenceType or 0 or more shiftExpressions.
+
+      Issues and resolution:
+      I ran into the following error messages on run and narrowed it down
+      to an issue with how it was being parsed by commenting out my
+      changes and compiling older test cases.
+
+      project1/ALeftShift.java:6: error: Type sought where ] found
+      project1/ALeftShift.java:7: error: 1 found where ] sought
+      project1/ALeftShift.java:7: error: Type sought where ) found
+      project1/ALeftShift.java:12: error: Type sought where  found
+
+      I realized I was returning early inside the while loop to check for
+      more shiftExpression statements and was also not scanning the next
+      token using have() properly. My original code was doing a see() to
+      look for GT or LE image via an if statement to know whether to enter
+      a while loop to add shiftExpressions then else into returning an
+      INSTANCEOF referenceType.
+
+4. Did you receive help from anyone? List their names, status (classmate, 
+   CS451/651 grad, TA, other), and the nature of help received.
+
+   Name               Status       Help Received
+   ----               ------       -------------
+
+   ...                ...          ...
+
+5. List any other comments here. Feel free to provide any feedback on how
+   much you learned from doing the assignment, and whether you enjoyed
+   doing it.
+
+   Problem 1 was the most time consuming for me, it took reading the JVM
+   Instruction Set documentation to get a food understanding on the stack
+   structure and how it was manipulated. Tracing out the stack frame in
+   exercise 4 and 5 were very helpful.
+   
+   Problems 2-4 were fairly simple after getting a feel for what needed to
+   be changed following the implementation of division '/'. The Java
+   lexical and syntactic grammar was the blueprint for extending j--'s.

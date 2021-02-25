@@ -1,0 +1,99 @@
+1. Enter the number of hours it took you to complete the project between
+   the <<< and >>> signs below (eg, <<<10>>>).
+
+   <<<7>>>
+   
+2. Enter the difficulty level (1: very easy; 5: very difficult) of the project
+   between <<< and >>> signs below (eg, <<<3>>>).
+
+   <<<2>>>
+
+3. Provide a short description of how you approached each problem, issues you 
+   encountered, and how you resolved those issues.
+
+   Problem 1 (Multiline Comment)
+      Approach:
+
+      Implementation would be similar to how regular comments were done.
+      I intercepted the code after reading in a '/' to look for a case of '*'
+      to start the multiline comment block. What is trickier here is needing
+      to read two characters, '*' and '/', to know when to exit out of the
+      comment state. A pair of nested if statements allow me to break out
+      of the while loop and continue scanning characters after detecting
+      the end of the comment block.
+
+      Issues and resolution:
+
+      I had no issues with running the test case and the gradescope submission.
+
+   Problem 2 (Operators)
+      Approach:
+
+      I followed the same approach in adding new operations to Scanner.java
+      and TokenInfo.java as I did in Project 1. New case statements and
+      nested if statements allowed identification of the new tokens.
+
+      Issues and resolution:
+
+      I had no issues with running the test case and gradescope submission.
+   
+   Problem 3 (Reserved Words)
+      Approach:
+
+      Same as before, this was an easy addition to TokenInfo.java to add the
+      new reserved words tokens. In Scanner.java I added the new words to the
+      reserved Hashtable.
+
+      Issues and resolution:
+
+      I had no issues with running the test case and gradescope submission.
+
+   Problem 4 (Literals)
+      Approach:
+
+      Looking at the lexical grammar's for j-- and Java I noticed that
+      implementing long could be done by intercepting getNextToken() in
+      Scanner.java before it returns the INT_LITERAL TokenInfo object
+      by checking for a 'L' or 'l' character.
+
+      Similarly for double, after leading integers, I check for possible
+      characters that signify a double type, e.g. '.', 'e', 'E', 'd', 'D'.
+      At this point, I enter into a double branch/state and build out the
+      double via the buffer StringBuffer() object. If statements allow for
+      optional characters such as '.', 'd', 'e', etc. to be added.
+      While loop allows for appending an arbitrary amount of digits.
+
+      To handle doubles that start with a '.' (which fall into an earlier
+      switch case), I re-utilized the code after scanning in a '.' in the
+      digit switch case.
+
+      Issues and resolution:
+
+      My initial run produced the following errors:
+
+      -j-- -t tests/Literals.java ✘
+      '1\t [3962 chars]t : <INT_LITERAL> = 0\n27\t :
+      <IDENTIFIER> = e[27117 chars]F> =' != '1\t [3962 chars]t :
+      <DOUBLE_LITERAL> = 0e2\n27\t : ")" = )\n27[26172 chars]F> ='
+      Diff is 32690 characters long. Set self.maxDiff to None to see it.
+
+      I did not account for the possibility of a digit followed by e|E.
+      I refactored my original code into its final, submitted form and
+      fixed this issue. Originally I had explicit, nested if else statements
+      for all the cases but as a result had much repeated code. By utilizing
+      if and while statements on the same level, I was able to selectively
+      append characters to the buffer.
+
+4. Did you receive help from anyone? List their names, status (classmate, 
+   CS451/651 grad, TA, other), and the nature of help received.
+
+   Name               Status       Help Received
+   ----               ------       -------------
+
+   ...                ...          ...
+
+5. List any other comments here. Feel free to provide any feedback on how
+   much you learned from doing the assignment, and whether you enjoyed
+   doing it.
+
+   ...
