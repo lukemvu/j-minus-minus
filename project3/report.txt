@@ -13,11 +13,19 @@
 
    Problem 1 (Long and Double Basic Types):
       Approach:
+      - searched for all instances of INT and added LONG and DOUBLE support
 
-      - searched for all occurrences of INT in Scanner and Parser
-      - added LONG and DOUBLE in similar fashion, including literals
-
-      Issues and resolution: ...
+      Issues and resolution:
+      - issue with parser parsing double instead of long in declaration for
+      - fibonacci as well as soem local vars
+      - found issue with missing class descriptor, looking for double.class
+      - and long.class, tracing for int.class
+      - tried Type.java field descriptors added in type.java
+      - private static String descriptorFor(Class<?> classRep) {
+      - to find out names, did a google search for jvm desciptor
+      - added missing
+      - : classRep == double.class ? "D"
+        : classRep == long.class ? "J"
 
    Problem 2 (Operators): ...
       Approach: ...

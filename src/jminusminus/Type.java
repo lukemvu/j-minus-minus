@@ -29,9 +29,9 @@ class Type {
     private static Hashtable<String, Type> types = new Hashtable<String, Type>();
 
     /**
-     * The int type.
+     * The double type.
      */
-    public final static Type INT = typeFor(int.class);
+    public final static Type DOUBLE = typeFor(double.class);
 
     /**
      * The long type.
@@ -39,9 +39,9 @@ class Type {
     public final static Type LONG = typeFor(long.class);
 
     /**
-     * The double type.
+     * The int type.
      */
-    public final static Type DOUBLE = typeFor(double.class);
+    public final static Type INT = typeFor(int.class);
 
     /**
      * The char type.
@@ -643,6 +643,8 @@ class Type {
         return classRep == null ? "V" : classRep == void.class ? "V"
                 : classRep.isArray() ? "[" + descriptorFor(classRep.getComponentType())
                 : classRep.isPrimitive() ? (classRep == int.class ? "I"
+                : classRep == double.class ? "D"
+                : classRep == long.class ? "J"
                 : classRep == char.class ? "C"
                 : classRep == boolean.class ? "Z" : "?")
                 : "L" + classRep.getName().replace('.', '/') + ";";

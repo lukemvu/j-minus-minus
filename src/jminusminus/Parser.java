@@ -546,16 +546,16 @@ public class Parser {
      * Parses and returns a type.
      *
      * <pre>
-     *   type ::= referenceType | basicType
+     *   type ::= basicType | referenceType
      * </pre>
      *
      * @return a type.
      */
     private Type type() {
-        if (seeReferenceType()) {
-            return referenceType();
+        if (seeBasicType()) {
+            return basicType();
         }
-        return basicType();
+        return referenceType();
     }
 
     /**
@@ -1336,7 +1336,7 @@ public class Parser {
             return true;
         } else {
             scanner.recordPosition();
-            if (have(BOOLEAN) || have(CHAR) || have(INT) || have(DOUBLE) || have(LONG)) {
+            if (have(BOOLEAN) || have(CHAR) || have(DOUBLE) || have(INT)  || have(LONG)) {
                 if (have(LBRACK) && see(RBRACK)) {
                     scanner.returnToPosition();
                     return true;
