@@ -23,10 +23,19 @@ class JLiteralDouble extends JExpression {
     }
 
     /**
+     * Returns the literal as a double.
+     *
+     * @return the literal as a double.
+     */
+    public double toDouble() {
+        return Double.parseDouble(text);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public JExpression analyze(Context context) {
-        // TODO
+        type = Type.DOUBLE;
         return this;
     }
 

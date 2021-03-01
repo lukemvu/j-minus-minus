@@ -27,6 +27,7 @@ blockStatement ::= localVariableDeclarationStatement
                  | statement
 
 statement ::= block
+            | DO statement WHILE parExpression SEMI
             | IF parExpression statement [ ELSE statement ]
             | RETURN [ expression ] SEMI
             | SEMI
@@ -53,7 +54,7 @@ arguments ::= LPAREN [ expression { COMMA expression } ] RPAREN
 
 type ::= referenceType | basicType
 
-basicType ::= BOOLEAN | CHAR | INT 
+basicType ::= BOOLEAN | CHAR | INT | LONG | DOUBLE
 
 referenceType ::= basicType LBRACK RBRACK { LBRACK RBRACK }
                 | qualifiedIdentifier { LBRACK RBRACK }
@@ -113,4 +114,4 @@ creator ::= ( basicType | qualifiedIdentifier )
 
 newArrayDeclarator ::= LBRACK expression RBRACK { LBRACK expression RBRACK } { LBRACK RBRACK }
 
-literal ::= CHAR_LITERAL | FALSE | INT_LITERAL | NULL | STRING_LITERAL | TRUE
+literal ::= CHAR_LITERAL | DOUBLE_LITERAL | FALSE | INT_LITERAL | LONG_LITERAL | NULL | STRING_LITERAL | TRUE

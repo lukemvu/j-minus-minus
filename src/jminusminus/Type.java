@@ -34,6 +34,16 @@ class Type {
     public final static Type INT = typeFor(int.class);
 
     /**
+     * The long type.
+     */
+    public final static Type LONG = typeFor(long.class);
+
+    /**
+     * The double type.
+     */
+    public final static Type DOUBLE = typeFor(double.class);
+
+    /**
      * The char type.
      */
     public final static Type CHAR = typeFor(char.class);
@@ -47,6 +57,16 @@ class Type {
      * The java.lang.Integer type.
      */
     public final static Type BOXED_INT = typeFor(java.lang.Integer.class);
+
+    /**
+     * The java.lang.Long type.
+     */
+    public final static Type BOXED_LONG = typeFor(java.lang.Long.class);
+
+    /**
+     * The java.lang.Double type.
+     */
+    public final static Type BOXED_DOUBLE = typeFor(java.lang.Double.class);
 
     /**
      * The java.lang.Character type.

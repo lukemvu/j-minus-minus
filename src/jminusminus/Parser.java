@@ -322,6 +322,7 @@ public class Parser {
      *
      * <pre>
      *   statement ::= block
+     *               | DO statement WHILE parExpression SEMI
      *               | IF parExpression statement [ ELSE statement ]
      *               | RETURN [ expression ] SEMI
      *               | SEMI
@@ -335,6 +336,12 @@ public class Parser {
         int line = scanner.token().line();
         if (see(LCURLY)) {
             return block();
+        } else if (have (DO)) {
+            JStatement statement = statement();
+            mustBe(WHILE);
+            JExpression test = parExpression();
+            mustBe(SEMI);
+            return new JDoStatement(line, statement, test);
         } else if (have(IF)) {
             JExpression test = parExpression();
             JStatement consequent = statement();
@@ -555,7 +562,7 @@ public class Parser {
      * Parses and returns a basic type.
      *
      * <pre>
-     *   basicType ::= BOOLEAN | CHAR | INT
+     *   basicType ::= BOOLEAN | CHAR | DOUBLE | INT | LONG
      * </pre>
      *
      * @return a basic type.
@@ -565,8 +572,12 @@ public class Parser {
             return Type.BOOLEAN;
         } else if (have(CHAR)) {
             return Type.CHAR;
+        } else if (have(DOUBLE)) {
+            return Type.DOUBLE;
         } else if (have(INT)) {
             return Type.INT;
+        } else if (have(LONG)) {
+            return Type.LONG;
         } else {
             reportParserError("Type sought where %s found", scanner.token().image());
             return Type.ANY;
@@ -1133,7 +1144,9 @@ public class Parser {
      * Parses a literal and returns an AST for it.
      *
      * <pre>
-     *   literal ::= CHAR_LITERAL | FALSE | INT_LITERAL | NULL | STRING_LITERAL | TRUE
+     *   literal ::= CHAR_LITERAL | DOUBLE_LITERAL | FALSE |
+     *               INT_LITERAL | LONG_LITERAL | NULL |
+     *               STRING_LITERAL | TRUE
      * </pre>
      *
      * @return an AST for a literal.
@@ -1142,10 +1155,14 @@ public class Parser {
         int line = scanner.token().line();
         if (have(CHAR_LITERAL)) {
             return new JLiteralChar(line, scanner.previousToken().image());
+        } else if (have(DOUBLE_LITERAL)) {
+            return new JLiteralDouble(line, scanner.previousToken().image());
         } else if (have(FALSE)) {
             return new JLiteralBoolean(line, scanner.previousToken().image());
         } else if (have(INT_LITERAL)) {
             return new JLiteralInt(line, scanner.previousToken().image());
+        } else if (have(LONG_LITERAL)) {
+            return new JLiteralLong(line, scanner.previousToken().image());
         } else if (have(NULL)) {
             return new JLiteralNull(line);
         } else if (have(STRING_LITERAL)) {
@@ -1310,7 +1327,7 @@ public class Parser {
 
     // Returns true if we are looking at a basic type, and false otherwise.
     private boolean seeBasicType() {
-        return (see(BOOLEAN) || see(CHAR) || see(INT));
+        return (see(BOOLEAN) || see(CHAR) || see(DOUBLE) || see(INT) || see(LONG));
     }
 
     // Returns true if we are looking at a reference type, and false otherwise.
@@ -1319,7 +1336,7 @@ public class Parser {
             return true;
         } else {
             scanner.recordPosition();
-            if (have(BOOLEAN) || have(CHAR) || have(INT)) {
+            if (have(BOOLEAN) || have(CHAR) || have(INT) || have(DOUBLE) || have(LONG)) {
                 if (have(LBRACK) && see(RBRACK)) {
                     scanner.returnToPosition();
                     return true;

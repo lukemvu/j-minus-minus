@@ -11,8 +11,11 @@
 3. Provide a short description of how you approached each problem, issues you 
    encountered, and how you resolved those issues.
 
-   Problem 1 (Long and Double Basic Types): ...
-      Approach: ...
+   Problem 1 (Long and Double Basic Types):
+      Approach:
+
+      - searched for all occurrences of INT in Scanner and Parser
+      - added LONG and DOUBLE in similar fashion, including literals
 
       Issues and resolution: ...
 
