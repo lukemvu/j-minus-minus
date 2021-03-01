@@ -825,7 +825,7 @@ public class Parser {
      * Parses a shift expression and returns an AST for it.
      *
      * <pre>
-     *   shiftExpression ::= additiveExpression { (ALSHFT | ARSHFT| LRSHFT) additiveExpression }
+     *   shiftExpression ::= additiveExpression { (ALSHIFT | ARSHIFT| LRSHIFT) additiveExpression }
      * </pre>
      *
      * @return an AST for an additive expression.
@@ -835,11 +835,11 @@ public class Parser {
         boolean more = true;
         JExpression lhs = additiveExpression();
         while (more) {
-            if (have(ALSHFT)) {
+            if (have(ALSHIFT)) {
                 lhs = new JALeftShiftOp(line, lhs, additiveExpression());
-            } else if (have(ARSHFT)) {
+            } else if (have(ARSHIFT)) {
                 lhs = new JARightShiftOp(line, lhs, additiveExpression());
-            } else if (have(LRSHFT)) {
+            } else if (have(LRSHIFT)) {
                 lhs = new JLRightShiftOp(line, lhs, additiveExpression());
             } else {
                 more = false;
@@ -940,7 +940,7 @@ public class Parser {
      */
     private JExpression simpleUnaryExpression() {
         int line = scanner.token().line();
-        if (have(COMPLEMENT)) {
+        if (have(NOT)) {
             return new JComplementOp(line, unaryExpression());
         } else if (have(LNOT)) {
             return new JLogicalNotOp(line, unaryExpression());

@@ -78,7 +78,7 @@ equalityExpression ::= relationalExpression { EQUAL relationalExpression }
 relationalExpression ::= shiftExpression ( { GT | LE ) shiftExpression}
                                             | INSTANCEOF referenceType )
 
-shiftExpression ::= additiveExpression { (ALSHFT | ARSHFT| LRSHFT) additiveExpression }
+shiftExpression ::= additiveExpression { (ALSHIFT | ARSHIFT| LRSHIFT) additiveExpression }
 
 additiveExpression ::= multiplicativeExpression { ( MINUS | PLUS ) multiplicativeExpression }
 
@@ -88,7 +88,7 @@ unaryExpression ::= INC unaryExpression
                   | (PLUS | MINUS) unaryExpression
                   | simpleUnaryExpression
 
-simpleUnaryExpression ::= COMPLEMENT unaryExpression
+simpleUnaryExpression ::= NOT unaryExpression
                         | LNOT unaryExpression
                         | LPAREN basicType RPAREN unaryExpression
                         | LPAREN referenceType RPAREN simpleUnaryExpression

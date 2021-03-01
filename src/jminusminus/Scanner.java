@@ -251,15 +251,15 @@ class Scanner {
                         nextCh();
                         if (ch == '=') {
                             nextCh();
-                            return new TokenInfo(LRSHFT_ASSIGN, line);
+                            return new TokenInfo(LRSHIFT_ASSIGN, line);
                         } else {
-                            return new TokenInfo(LRSHFT, line);
+                            return new TokenInfo(LRSHIFT, line);
                         }
                     } else if (ch == '=') {
                         nextCh();
-                        return new TokenInfo(ARSHFT_ASSIGN, line);
+                        return new TokenInfo(ARSHIFT_ASSIGN, line);
                     } else {
-                        return new TokenInfo(ARSHFT, line);
+                        return new TokenInfo(ARSHIFT, line);
                     }
                 } else if (ch == '=') {
                     nextCh();
@@ -276,9 +276,9 @@ class Scanner {
                     nextCh();
                     if (ch == '=') {
                         nextCh();
-                        return new TokenInfo(ALSHFT_ASSIGN, line);
+                        return new TokenInfo(ALSHIFT_ASSIGN, line);
                     } else {
-                        return new TokenInfo(ALSHFT, line);
+                        return new TokenInfo(ALSHIFT, line);
                     }
                 } else {
                     return new TokenInfo(LT, line);
@@ -287,7 +287,7 @@ class Scanner {
                 nextCh();
                 if (ch == '=') {
                     nextCh();
-                    return new TokenInfo(NE, line);
+                    return new TokenInfo(NOT_EQUAL, line);
                 } else {
                     return new TokenInfo(LNOT, line);
                 }
@@ -304,7 +304,7 @@ class Scanner {
                 }
             case '~':
                 nextCh();
-                return new TokenInfo(COMPLEMENT, line);
+                return new TokenInfo(NOT, line);
             case '^':
                 nextCh();
                 if (ch == '=') {

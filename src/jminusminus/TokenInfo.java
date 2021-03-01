@@ -23,10 +23,10 @@ enum TokenKind {
     // Operators.
     ASSIGN("="), DEC("--"), EQUAL("=="), GT(">"), INC("++"), LAND("&&"), LE("<="), LNOT("!"),
     MINUS("-"), PLUS("+"), PLUS_ASSIGN("+="), STAR("*"), DIV("/"), REM("%"),
-    COMPLEMENT("~"), OR("|"), XOR("^"), AND("&"), ALSHFT("<<"), ARSHFT(">>"),
-    LRSHFT(">>>"), QUESTION("?"), COLON(":"), NE("!="), DIV_ASSIGN("/="),
-    MINUS_ASSIGN("-="), STAR_ASSIGN("*="), REM_ASSIGN("%="), ARSHFT_ASSIGN(">>="),
-    LRSHFT_ASSIGN(">>>="), GE(">="), ALSHFT_ASSIGN("<<="), LT("<"), XOR_ASSIGN("^="),
+    NOT("~"), OR("|"), XOR("^"), AND("&"), ALSHIFT("<<"), ARSHIFT(">>"),
+    LRSHIFT(">>>"), QUESTION("?"), COLON(":"), NOT_EQUAL("!="), DIV_ASSIGN("/="),
+    MINUS_ASSIGN("-="), STAR_ASSIGN("*="), REM_ASSIGN("%="), ARSHIFT_ASSIGN(">>="),
+    LRSHIFT_ASSIGN(">>>="), GE(">="), ALSHIFT_ASSIGN("<<="), LT("<"), XOR_ASSIGN("^="),
     OR_ASSIGN("|="), LOR("||"), AND_ASSIGN("&="),
 
     // Separators.
