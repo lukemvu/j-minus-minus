@@ -47,6 +47,10 @@ forInit ::= statementExpression { COMMA statementExpression } | type variableDec
 
 forUpdate ::= statementExpression { COMMA statementExpression }
 
+switchBlockStatementGroup ::= switchLabel { switchLabel } { blockStatemment }
+
+switchLabel ::= CASE expression COLON | DEFAULT COLON
+
 localVariableDeclarationStatement ::= type variableDeclarators SEMI
 
 variableDeclarators ::= variableDeclarator { COMMA variableDeclarator }

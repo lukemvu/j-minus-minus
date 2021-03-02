@@ -122,14 +122,32 @@
       no issues
 
    Problem 7 (Continue Statement):
-      Approach: so
+      Approach: same implementation as break statement
 
-      Issues and resolution: ...
+      Issues and resolution:
 
-   Problem 8 (Switch Statement): ...
-      Approach: ...
+      no issues
 
-      Issues and resolution: ...
+
+   Problem 8 (Switch Statement):
+      Approach:
+      looked for ways to implement the hints, looked inside
+      jswitch statement, parameters took a list of switch statement group,
+      told me that i needed to build that list while parsing inside statement
+      - do while works, condition is simple enough to parse
+
+      - switch label, bit coonfused on what to return for defualt,
+      looking into jswitchstatement, for the json part, is a label is null it
+      is default, this tells me to return null if i parse default + colon
+
+      - some confusion on stop condition for adding switch labels
+      - just stop adding switch labels when there are no more case+ default!
+      - for adding blockstatements, used the provided hints
+
+
+      Issues and resolution:
+
+      flawless execution
 
    Problem 9 (Exception Handlers): ...
       Approach: ...

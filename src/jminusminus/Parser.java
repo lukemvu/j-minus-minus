@@ -377,6 +377,15 @@ public class Parser {
             }
         } else if (have(SEMI)) {
             return new JEmptyStatement(line);
+        } else if (have(SWITCH)) {
+            JExpression condition = parExpression();
+            mustBe(LCURLY);
+            ArrayList<SwitchStatementGroup> statementGroup = new ArrayList<SwitchStatementGroup>();
+            do {
+                statementGroup.add(switchBlockStatementGroup());
+            } while (!see(RCURLY) && !see(EOF));
+            mustBe(RCURLY);
+            return new JSwitchStatement(line, condition, statementGroup);
         } else if (have(WHILE)) {
             JExpression test = parExpression();
             JStatement statement = statement();
@@ -483,6 +492,48 @@ public class Parser {
             forUpdate.add(statementExpression());
         } while (have(COMMA));
         return forUpdate;
+    }
+
+    /**
+     * Parses and returns a switch-statement group.
+     *
+     * <pre>
+     *     switchBlockStatementGroup ::= switchLabel { switchLabel } { blockStatemment }
+     * </pre>
+     *
+     * @return a switch-statement group.
+     */
+    private SwitchStatementGroup switchBlockStatementGroup(){
+        ArrayList<JExpression> switchLabels = new ArrayList<JExpression>();
+        ArrayList<JStatement> block = new ArrayList<JStatement>();
+        do {
+            switchLabels.add(switchLabel());
+        } while (see(CASE) || see(DEFAULT));
+        do {
+            block.add(blockStatement());
+        } while (!see(CASE) && !see(DEFAULT) && !see(RCURLY));
+        return new SwitchStatementGroup(switchLabels, block);
+    }
+
+    /**
+     * Parses and returns a switch label expression.
+     *
+     * <pre>
+     *     switchLabel ::= CASE expression COLON | DEFAULT COLON
+     * </pre>
+     *
+     * @return a switch label expression.
+     */
+    private JExpression switchLabel() {
+        if (have(CASE)) {
+            JExpression expression = expression();
+            mustBe(COLON);
+            return expression;
+        } else {
+            mustBe(DEFAULT);
+            mustBe(COLON);
+            return null;
+        }
     }
 
     /**
