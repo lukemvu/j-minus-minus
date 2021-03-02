@@ -323,6 +323,7 @@ public class Parser {
      * <pre>
      *   statement ::= block
      *               | BREAK SEMI
+     *               | CONTINUE SEMI
      *               | DO statement WHILE parExpression SEMI
      *               | IF parExpression statement [ ELSE statement ]
      *               | RETURN [ expression ] SEMI
@@ -341,7 +342,11 @@ public class Parser {
             JBreakStatement statement = new JBreakStatement(line);
             mustBe(SEMI);
             return statement;
-        } else if (have (DO)) {
+        } else if (have(CONTINUE)) {
+            JContinueStatement statement = new JContinueStatement(line);
+            mustBe(SEMI);
+            return statement;
+        }else if (have (DO)) {
             JStatement statement = statement();
             mustBe(WHILE);
             JExpression test = parExpression();

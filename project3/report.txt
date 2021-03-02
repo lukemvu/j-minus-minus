@@ -119,9 +119,10 @@
       create a new one, check for semi, return, easy cake
 
       Issues and resolution:
+      no issues
 
-   Problem 7 (Continue Statement): ...
-      Approach: ...
+   Problem 7 (Continue Statement):
+      Approach: so
 
       Issues and resolution: ...
 
