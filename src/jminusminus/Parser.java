@@ -657,22 +657,69 @@ public class Parser {
      * Parses an assignment expression and returns an AST for it.
      *
      * <pre>
-     *   assignmentExpression ::= conditionalAndExpression
-     *                                [ ( ASSIGN | PLUS_ASSIGN ) assignmentExpression ]
+     *   assignmentExpression ::= conditionalOrExpression
+     *                              [ ( ALSHIFT_ASSIGN | AND_ASSIGN | ARSHIFT_ASSIGN
+     *                              | ASSIGN | DIV_ASSIGN | LRSHIFT_ASSIGN
+     *                              | MINUS_ASSIGN | OR_ASSIGN | PLUS_ASSIGN
+     *                              | REM_ASSIGN | STAR_ASSIGN | XOR_ASSIGN
+     *                              ) assignmentExpression ]
      * </pre>
      *
      * @return an AST for an assignment expression.
      */
     private JExpression assignmentExpression() {
         int line = scanner.token().line();
-        JExpression lhs = conditionalAndExpression();
-        if (have(ASSIGN)) {
+        JExpression lhs = conditionalOrExpression();
+        if (have(ALSHIFT_ASSIGN)) {
+            return new JALeftShiftAssignOp(line, lhs, assignmentExpression());
+        } else if (have(AND_ASSIGN)) {
+            return new JAndAssignOp(line, lhs, assignmentExpression());
+        } else if (have(ARSHIFT_ASSIGN)) {
+            return new JARightShiftAssignOp(line, lhs, assignmentExpression());
+        } else if (have(ASSIGN)) {
             return new JAssignOp(line, lhs, assignmentExpression());
+        } else if (have(DIV_ASSIGN)) {
+            return new JDivAssignOp(line, lhs, assignmentExpression());
+        } else if (have(LRSHIFT_ASSIGN)) {
+            return new JLRightShiftAssignOp(line, lhs, assignmentExpression());
+        } else if (have(MINUS_ASSIGN)) {
+            return new JMinusAssignOp(line, lhs, assignmentExpression());
+        } else if (have(OR_ASSIGN)) {
+            return new JOrAssignOp(line, lhs, assignmentExpression());
         } else if (have(PLUS_ASSIGN)) {
             return new JPlusAssignOp(line, lhs, assignmentExpression());
+        } else if (have(REM_ASSIGN)) {
+            return new JRemAssignOp(line, lhs, assignmentExpression());
+        } else if (have(STAR_ASSIGN)) {
+            return new JStarAssignOp(line, lhs, assignmentExpression());
+        } else if (have(XOR_ASSIGN)) {
+            return new JXorAssignOp(line, lhs, assignmentExpression());
         } else {
             return lhs;
         }
+    }
+
+    /**
+     * Parses a conditional-or expression and returns an AST for it.
+     *
+     * <pre>
+     *   conditionalOrExpression ::= conditionalAndExpression { LOR conditionalAndExperssion }
+     * </pre>
+     *
+     * @return an AST for a conditional-or expression.
+     */
+    private JExpression conditionalOrExpression() {
+        int line = scanner.token().line();
+        boolean more = true;
+        JExpression lhs = conditionalAndExpression();
+        while (more) {
+            if (have(LOR)) {
+                lhs = new JLogicalOrOp(line, lhs, conditionalAndExpression());
+            } else {
+                more = false;
+            }
+        }
+        return lhs;
     }
 
     /**
@@ -771,7 +818,7 @@ public class Parser {
      * Parses an equality expression and returns an AST for it.
      *
      * <pre>
-     *   equalityExpression ::= relationalExpression { EQUAL relationalExpression }
+     *   equalityExpression ::= relationalExpression { (EQUAL | NOT EQUAL) relationalExpression }
      * </pre>
      *
      * @return an AST for an equality expression.
@@ -783,6 +830,8 @@ public class Parser {
         while (more) {
             if (have(EQUAL)) {
                 lhs = new JEqualOp(line, lhs, relationalExpression());
+            } else if (have(NOT_EQUAL)) {
+                lhs = new JNotEqualOp(line, lhs, relationalExpression());
             } else {
                 more = false;
             }
@@ -794,8 +843,8 @@ public class Parser {
      * Parses a relational expression and returns an AST for it.
      *
      * <pre>
-     *   relationalExpression ::= shiftExpression ( { ( GT | LE ) shiftExpression }
-     *                                              | INSTANCEOF referenceType )
+     *   relationalExpression ::= shiftExpression [ (  GE | GT | LE | LT ) shiftExpression
+     *                                             | INSTANCEOF referenceType ]
      * </pre>
      *
      * @return an AST for a relational expression.
@@ -803,22 +852,20 @@ public class Parser {
 
     private JExpression relationalExpression() {
         int line = scanner.token().line();
-        boolean more = true;
         JExpression lhs = shiftExpression();
         if (have(INSTANCEOF)) {
             return new JInstanceOfOp(line, lhs, referenceType());
+        } else if (have(GE)) {
+            return new JGreaterEqualOp(line, lhs, shiftExpression());
+        } else if (have(GT)) {
+            return new JGreaterThanOp(line, lhs, shiftExpression());
+        } else if (have(LE)) {
+            return new JLessEqualOp(line, lhs, shiftExpression());
+        } else if (have(LT)) {
+            return new JLessThanOp(line, lhs, shiftExpression());
         } else {
-            while (more) {
-                if (have(GT)) {
-                    lhs =  new JGreaterThanOp(line, lhs, shiftExpression());
-                } else if (have(LE)) {
-                    lhs =  new JLessEqualOp(line, lhs, shiftExpression());
-                } else {
-                    more = false;
-                }
-            }
+            return lhs;
         }
-        return lhs;
     }
 
     /**
@@ -905,8 +952,9 @@ public class Parser {
      * Parses an unary expression and returns an AST for it.
      *
      * <pre>
-     *   unaryExpression ::= INC unaryExpression
-     *                     | MINUS unaryExpression
+     *   unaryExpression ::= DEC unaryExpression
+     *                     | INC unaryExpression
+     *                     | ( MINUS | PLUS) unaryExpression
      *                     | simpleUnaryExpression
      * </pre>
      *
@@ -914,7 +962,9 @@ public class Parser {
      */
     private JExpression unaryExpression() {
         int line = scanner.token().line();
-        if (have(INC)) {
+        if (have(DEC)) {
+            return new JPreDecrementOp(line, unaryExpression());
+        } else if (have(INC)) {
             return new JPreIncrementOp(line, unaryExpression());
         } else if (have(MINUS)) {
             return new JNegateOp(line, unaryExpression());
@@ -960,19 +1010,26 @@ public class Parser {
      * Parses a postfix expression and returns an AST for it.
      *
      * <pre>
-     *   postfixExpression ::= primary { selector } { DEC }
+     *   postfixExpression ::= primary { selector } { DEC | INC }
      * </pre>
      *
      * @return an AST for a postfix expression.
      */
     private JExpression postfixExpression() {
         int line = scanner.token().line();
+        boolean more = true;
         JExpression primaryExpr = primary();
         while (see(DOT) || see(LBRACK)) {
             primaryExpr = selector(primaryExpr);
         }
-        while (have(DEC)) {
-            primaryExpr = new JPostDecrementOp(line, primaryExpr);
+        while (more) {
+            if (have(DEC)) {
+                primaryExpr = new JPostDecrementOp(line, primaryExpr);
+            } else if (have(INC)) {
+                primaryExpr = new JPostIncrementOp(line, primaryExpr);
+            } else {
+                more = false;
+            }
         }
         return primaryExpr;
     }

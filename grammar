@@ -63,7 +63,14 @@ statementExpression ::= expression
 
 expression ::= assignmentExpression
 
-assignmentExpression ::= conditionalAndExpression [ ( ASSIGN | PLUS_ASSIGN ) assignmentExpression ]
+assignmentExpression ::= conditionalOrExpression
+                             [ ( ALSHIFT_ASSIGN | AND_ASSIGN | ARSHIFT_ASSIGN
+                             | ASSIGN | DIV_ASSIGN | LRSHIFT_ASSIGN
+                             | MINUS_ASSIGN | OR_ASSIGN | PLUS_ASSIGN
+                             | REM_ASSIGN | STAR_ASSIGN | XOR_ASSIGN
+                             ) assignmentExpression ]
+
+conditionalOrExpression ::= conditionalAndExpression { LOR conditionalAndExpression }
 
 conditionalAndExpression ::= inclusiveOrExpression { LAND inclusiveOrExpression }
 
@@ -73,19 +80,20 @@ exclusiveOrExpression ::= andExpression { XOR andExpression }
 
 andExpression ::= equalityExpression { AND equalityExpression }
 
-equalityExpression ::= relationalExpression { EQUAL relationalExpression }
+equalityExpression ::= relationalExpression { (EQUAL | NOT EQUAL) relationalExpression }
 
-relationalExpression ::= shiftExpression ( { GT | LE ) shiftExpression}
-                                            | INSTANCEOF referenceType )
+relationalExpression ::= shiftExpression [ ( GE | GT | LE | LT ) shiftExpression
+                                           | INSTANCEOF referenceType ) ]
 
-shiftExpression ::= additiveExpression { (ALSHIFT | ARSHIFT| LRSHIFT) additiveExpression }
+shiftExpression ::= additiveExpression { ( ALSHIFT | ARSHIFT| LRSHIFT ) additiveExpression }
 
 additiveExpression ::= multiplicativeExpression { ( MINUS | PLUS ) multiplicativeExpression }
 
 multiplicativeExpression ::= unaryExpression { (STAR | DIV | REM) unaryExpression }
 
-unaryExpression ::= INC unaryExpression
-                  | (PLUS | MINUS) unaryExpression
+unaryExpression ::= DEC unaryExpression
+                  | INC unaryExpression
+                  | ( MINUS | PLUS ) unaryExpression
                   | simpleUnaryExpression
 
 simpleUnaryExpression ::= NOT unaryExpression
@@ -94,7 +102,7 @@ simpleUnaryExpression ::= NOT unaryExpression
                         | LPAREN referenceType RPAREN simpleUnaryExpression
                         | postfixExpression 
 
-postfixExpression ::= primary { selector } { DEC }
+postfixExpression ::= primary { selector } { DEC | INC}
 
 selector ::= DOT qualifiedIdentifier [ arguments ]
            | LBRACK expression RBRACK
