@@ -17,8 +17,10 @@ classDeclaration ::= CLASS IDENTIFIER [ EXTENDS qualifiedIdentifier ] classBody
 
 classBody ::= LCURLY { modifiers memberDecl } RCURLY
 
-memberDecl ::= IDENTIFIER formalParameters block
-             | ( VOID | type ) IDENTIFIER formalParameters ( block | SEMI )
+memberDecl ::= IDENTIFIER formalParameters
+                    [ THROWS qualifiedIdentifier { COMMA qualifiedIdentifier } ] block
+             | ( VOID | type ) IDENTIFIER formalParameters
+                    [ THROWS qualifiedIdentifier { COMMA qualifiedIdentifier } ] ( block | SEMI )
              | type variableDeclarators SEMI
 
 block ::= LCURLY { blockStatement } RCURLY
@@ -34,6 +36,9 @@ statement ::= block
             | IF parExpression statement [ ELSE statement ]
             | RETURN [ expression ] SEMI
             | SEMI
+            | SWITCH parExpression LCURLY { switchBlockStatementGroup } RCURLY
+            | THROW expression SEMI
+            | TRY block { CATCH LPAREN formalParameter RPAREN block } [ FINALLY block ]
             | WHILE parExpression statement
             | statementExpression SEMI
 

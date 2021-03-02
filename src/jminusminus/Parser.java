@@ -2,6 +2,7 @@
 
 package jminusminus;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import static jminusminus.TokenKind.*;
@@ -232,9 +233,12 @@ public class Parser {
      * Parses a member declaration and returns an AST for it.
      *
      * <pre>
-     *   memberDecl ::= IDENTIFIER formalParameters block
-     *                | ( VOID | type ) IDENTIFIER formalParameters ( block | SEMI )
-     *                | type variableDeclarators SEMI
+     *     memberDecl ::= IDENTIFIER formalParameters
+     *                     [ THROWS qualifiedIdentifier { COMMA qualifiedIdentifier } ] block
+     *              | ( VOID | type ) IDENTIFIER formalParameters
+     *                     [ THROWS qualifiedIdentifier { COMMA qualifiedIdentifier } ]
+     *                     ( block | SEMI )
+     *              | type variableDeclarators SEMI
      * </pre>
      *
      * @param mods the class member modifiers.
@@ -248,8 +252,16 @@ public class Parser {
             mustBe(IDENTIFIER);
             String name = scanner.previousToken().image();
             ArrayList<JFormalParameter> params = formalParameters();
+            ArrayList<TypeName> exceptions = new ArrayList<TypeName>();
+            if (have(THROWS)) {
+                do {
+                    exceptions.add(qualifiedIdentifier());
+                } while (have(COMMA));
+            } else {
+                exceptions = null;
+            }
             JBlock body = block();
-            memberDecl = new JConstructorDeclaration(line, mods, name, params, null, body);
+            memberDecl = new JConstructorDeclaration(line, mods, name, params, exceptions, body);
         } else {
             Type type = null;
             if (have(VOID)) {
@@ -258,8 +270,16 @@ public class Parser {
                 mustBe(IDENTIFIER);
                 String name = scanner.previousToken().image();
                 ArrayList<JFormalParameter> params = formalParameters();
+                ArrayList<TypeName> exceptions = new ArrayList<TypeName>();
+                if (have(THROWS)) {
+                    do {
+                        exceptions.add(qualifiedIdentifier());
+                    } while (have(COMMA));
+                } else {
+                    exceptions = null;
+                }
                 JBlock body = have(SEMI) ? null : block();
-                memberDecl = new JMethodDeclaration(line, mods, name, type, params, null, body);
+                memberDecl = new JMethodDeclaration(line, mods, name, type, params, exceptions, body);
             } else {
                 type = type();
                 if (seeIdentLParen()) {
@@ -267,8 +287,16 @@ public class Parser {
                     mustBe(IDENTIFIER);
                     String name = scanner.previousToken().image();
                     ArrayList<JFormalParameter> params = formalParameters();
+                    ArrayList<TypeName> exceptions = new ArrayList<TypeName>();
+                    if (have(THROWS)) {
+                        do {
+                            exceptions.add(qualifiedIdentifier());
+                        } while (have(COMMA));
+                    } else {
+                        exceptions = null;
+                    }
                     JBlock body = have(SEMI) ? null : block();
-                    memberDecl = new JMethodDeclaration(line, mods, name, type, params, null, body);
+                    memberDecl = new JMethodDeclaration(line, mods, name, type, params, exceptions, body);
                 } else {
                     // A field.
                     memberDecl = new JFieldDeclaration(line, mods, variableDeclarators(type));
@@ -325,9 +353,13 @@ public class Parser {
      *               | BREAK SEMI
      *               | CONTINUE SEMI
      *               | DO statement WHILE parExpression SEMI
+     *               | FOR LPAREN [ forInit ] SEMI [ expression ] SEMI [ forUpdate ] RPAREN statement
      *               | IF parExpression statement [ ELSE statement ]
      *               | RETURN [ expression ] SEMI
      *               | SEMI
+     *               | SWITCH parExpression LCURLY { switchBlockStatementGroup } RCURLY
+     *               | THROW expression SEMI
+     *               | TRY block { CATCH LPAREN formalParameter RPAREN block } [ FINALLY block ]
      *               | WHILE parExpression statement
      *               | statementExpression SEMI
      * </pre>
@@ -386,6 +418,22 @@ public class Parser {
             } while (!see(RCURLY) && !see(EOF));
             mustBe(RCURLY);
             return new JSwitchStatement(line, condition, statementGroup);
+        } else if (have(THROW)) {
+            JExpression expression = expression();
+            mustBe(SEMI);
+            return new JThrowStatement(line, expression);
+        } else if (have(TRY)) {
+            JBlock tryBlock = block();
+            ArrayList<JFormalParameter> parameters = new ArrayList<JFormalParameter>();
+            ArrayList<JBlock> catchBlocks = new ArrayList<JBlock>();
+            while (have(CATCH)) {
+                mustBe(LPAREN);
+                parameters.add(formalParameter());
+                mustBe(RPAREN);
+                catchBlocks.add(block());
+            }
+            JBlock finallyBlock = have(FINALLY) ? block() : null;
+            return new JTryStatement(line, tryBlock, parameters, catchBlocks, finallyBlock);
         } else if (have(WHILE)) {
             JExpression test = parExpression();
             JStatement statement = statement();

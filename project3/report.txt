@@ -149,10 +149,33 @@
 
       flawless execution
 
-   Problem 9 (Exception Handlers): ...
-      Approach: ...
+   Problem 9 (Exception Handlers):
+      Approach:
+       - throw statement simple to do, takes one expression
+       - try, takes a single block to start
+       - first attempt, pase a tryblock
+       - aray list of parameters and a array list of catch blocks
+       - didn't implement THROWS
+       - everything else is working afte commenting out that that section
+       - check the jconstructordeclar and jmethoddec to see what parameters it takes
+       - just need to intercept THROWS and parse all the qualified Identifiers, the exceptions
+       - pass as arraylist of TypeName to the method and contructor declaratioons
+       - done for both void and non void methods
 
-      Issues and resolution: ...
+
+
+      Issues and resolution:
+
+      project3/ExceptionHandlers.java:25: error: throws found where { sought
+      project3/ExceptionHandlers.java:25: error: Literal sought where throws found
+      project3/ExceptionHandlers.java:25: error: Invalid statement expression; it does not have a side-effect
+      project3/ExceptionHandlers.java:29: error: Type sought where return found
+
+      - issue with my ast throwing empty set of braces []
+      - all other code not working now, some issue with parsing [] in main method
+      - "throws": [],
+      - fixed issue by passing null if exceptions arraylist of typename is empty
+
 
    Problem 10 (Interface Type Declaration): ...
       Approach: ...
