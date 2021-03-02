@@ -27,6 +27,7 @@ blockStatement ::= localVariableDeclarationStatement
                  | statement
 
 statement ::= block
+            | BREAK SEMI
             | DO statement WHILE parExpression SEMI
             | FOR LPAREN [ forInit ] SEMI [ expression ] SEMI [ forUpdate ] RPAREN statement
             | IF parExpression statement [ ELSE statement ]

@@ -322,6 +322,7 @@ public class Parser {
      *
      * <pre>
      *   statement ::= block
+     *               | BREAK SEMI
      *               | DO statement WHILE parExpression SEMI
      *               | IF parExpression statement [ ELSE statement ]
      *               | RETURN [ expression ] SEMI
@@ -336,6 +337,10 @@ public class Parser {
         int line = scanner.token().line();
         if (see(LCURLY)) {
             return block();
+        } else if (have(BREAK)) {
+            JBreakStatement statement = new JBreakStatement(line);
+            mustBe(SEMI);
+            return statement;
         } else if (have (DO)) {
             JStatement statement = statement();
             mustBe(WHILE);

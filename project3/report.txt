@@ -105,17 +105,20 @@
                                },
 
     - fixed an error, in forinit, use seeBasicType and seeRefType to know which
-    path to go into
+    path to go into, was using see(IDENFTIFIER) previously, which was jsut wrong
     - project3/ForStatement.java:8: error: Invalid statement expression; it does not have a side-effect
     - this is my last issue
     - seraching around statementExpression()
     - saw that i was missing adding post inc and pre dec to statementexpression
 
 
-   Problem 6 (Break Statement): ...
-      Approach: ...
+   Problem 6 (Break Statement):
+      Approach:
+      - checked jbreakstatement to see what it took for params,
+      just line number
+      create a new one, check for semi, return, easy cake
 
-      Issues and resolution: ...
+      Issues and resolution:
 
    Problem 7 (Continue Statement): ...
       Approach: ...
