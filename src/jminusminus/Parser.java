@@ -342,6 +342,16 @@ public class Parser {
             JExpression test = parExpression();
             mustBe(SEMI);
             return new JDoStatement(line, statement, test);
+        } else if (have(FOR)) {
+            mustBe(LPAREN);
+            ArrayList<JStatement> init = see(SEMI) ? null : forInit();
+            mustBe(SEMI);
+            JExpression test = see(SEMI) ? null : expression();
+            mustBe(SEMI);
+            ArrayList<JStatement> update = see(RPAREN) ? null : forUpdate();
+            mustBe(RPAREN);
+            JStatement body = statement();
+            return new JForStatement(line, init, test, update, body);
         } else if (have(IF)) {
             JExpression test = parExpression();
             JStatement consequent = statement();
@@ -422,6 +432,47 @@ public class Parser {
         JExpression expr = expression();
         mustBe(RPAREN);
         return expr;
+    }
+
+    /**
+     * Parses and returns a list of 'for init' expressions.
+     *
+     * <pre>
+     *     forInit ::= statementExpression { COMMA statementExpression } | type variableDeclarators
+     * </pre>
+     *
+     * @return a list of 'for init' expressions.
+     */
+    private ArrayList<JStatement> forInit() {
+        ArrayList<JStatement> forInit = new ArrayList<JStatement>();
+        if (seeBasicType() || seeReferenceType()) {
+            int line = scanner.token().line();
+            Type type = type();
+            ArrayList<JVariableDeclarator> vdecls = variableDeclarators(type);
+            forInit.add(new JVariableDeclaration(line, vdecls));
+        } else {
+            do {
+                forInit.add(statementExpression());
+            } while (have(COMMA));
+        }
+        return forInit;
+    }
+
+    /**
+     * Parses and returns a list of 'for update' expressions.
+     *
+     * <pre>
+     *     forUpdate ::= statementExpression { COMMA statementExpression }
+     * </pre>
+     *
+     * @return a list of 'for update' expressions.
+     */
+    private ArrayList<JStatement> forUpdate(){
+        ArrayList<JStatement> forUpdate = new ArrayList<JStatement>();
+        do {
+            forUpdate.add(statementExpression());
+        } while (have(COMMA));
+        return forUpdate;
     }
 
     /**
@@ -626,6 +677,8 @@ public class Parser {
         JExpression expr = expression();
         if (expr instanceof JAssignment
                 || expr instanceof JPreIncrementOp
+                || expr instanceof JPostIncrementOp
+                || expr instanceof JPreDecrementOp
                 || expr instanceof JPostDecrementOp
                 || expr instanceof JMessageExpression
                 || expr instanceof JSuperConstruction
@@ -698,6 +751,7 @@ public class Parser {
             return lhs;
         }
     }
+
     /**
      * Parses a conditional expression and returns an AST for it.
      *

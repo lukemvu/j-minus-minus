@@ -28,6 +28,7 @@ blockStatement ::= localVariableDeclarationStatement
 
 statement ::= block
             | DO statement WHILE parExpression SEMI
+            | FOR LPAREN [ forInit ] SEMI [ expression ] SEMI [ forUpdate ] RPAREN statement
             | IF parExpression statement [ ELSE statement ]
             | RETURN [ expression ] SEMI
             | SEMI
@@ -39,6 +40,10 @@ formalParameters ::= LPAREN [ formalParameter { COMMA formalParameter } ] RPAREN
 formalParameter ::= type IDENTIFIER
 
 parExpression ::= LPAREN expression RPAREN
+
+forInit ::= statementExpression { COMMA statementExpression } | type variableDeclarators
+
+forUpdate ::= statementExpression { COMMA statementExpression }
 
 localVariableDeclarationStatement ::= type variableDeclarators SEMI
 

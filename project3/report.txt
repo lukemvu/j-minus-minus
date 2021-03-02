@@ -1,7 +1,7 @@
 1. Enter the number of hours it took you to complete the project between
    the <<< and >>> signs below (eg, <<<10>>>).
 
-   <<< >>>
+   <<<11>>>
    
 2. Enter the difficulty level (1: very easy; 5: very difficult) of the project
    between the <<< and >>> signs below (eg, <<<3>>>).
@@ -52,15 +52,65 @@
       Issues and resolution:
       - no issues, worked on GS
 
-   Problem 4 (Do Statement): ...
-      Approach: ...
+   Problem 4 (Do Statement):
+      Approach:
+      - freebie from examples
+
+      Issues and resolution:
+      - noo issues
+
+   Problem 5 (For Statement):
+      Approach:
+      - looked into JForStatement
+      - build similar to do, using mustbe
+      - for update, check other methods that use similar comma expression
+      and an arraylist
+      - couldn't figure out how to do the type cariableDeclarators
+      portion for forInit, hard stuck for a while
+      - realized JVariableDeclaration object extends JStatement
+      - that was a valid object to add to the ArrayList
+      - can't use localvariabledeclarstatement because it consumes the semicolon
+      - can copy paste the other stuff except that and pass it in
 
       Issues and resolution: ...
 
-   Problem 5 (For Statement): ...
-      Approach: ...
+      luke@luke-elementaryos-desktop:~/workspace/j--$ bash ./bin/j-- -p project3/ForStatement.java | diff -u - project3/ForStatement.ast
+      project3/ForStatement.java:8: error: Literal sought where int found
+      project3/ForStatement.java:8: error: Invalid statement expression; it does not have a side-effect
+      project3/ForStatement.java:8: error: Invalid statement expression; it does not have a side-effect
+      --- -	2021-03-02 00:33:07.239728650 -0500
+      +++ project3/ForStatement.ast	2021-01-28 08:56:27.000000000 -0500
+      @@ -73,10 +73,20 @@
+                           {
+                               "Init":
+                               {
+      -                            "JStatementExpression:8":
+      +                            "JVariableDeclaration:8":
+                                   {
+      -                                "JWildExpression:8":
+      +                                "JVariableDeclarator:8":
+                                       {
+      +                                    "name": "i",
+      +                                    "type": "int",
+      +                                    "Initializer":
+      +                                    {
+      +                                        "JLiteralInt:8":
+      +                                        {
+      +                                            "type": "",
+      +                                            "value": "1"
+      +                                        }
+      +                                    }
+                                       }
+                                   }
+                               },
 
-      Issues and resolution: ...
+    - fixed an error, in forinit, use seeBasicType and seeRefType to know which
+    path to go into
+    - project3/ForStatement.java:8: error: Invalid statement expression; it does not have a side-effect
+    - this is my last issue
+    - seraching around statementExpression()
+    - saw that i was missing adding post inc and pre dec to statementexpression
+
 
    Problem 6 (Break Statement): ...
       Approach: ...
