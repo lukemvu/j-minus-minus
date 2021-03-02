@@ -63,12 +63,14 @@ statementExpression ::= expression
 
 expression ::= assignmentExpression
 
-assignmentExpression ::= conditionalOrExpression
+assignmentExpression ::= conditionalExpression
                              [ ( ALSHIFT_ASSIGN | AND_ASSIGN | ARSHIFT_ASSIGN
                              | ASSIGN | DIV_ASSIGN | LRSHIFT_ASSIGN
                              | MINUS_ASSIGN | OR_ASSIGN | PLUS_ASSIGN
                              | REM_ASSIGN | STAR_ASSIGN | XOR_ASSIGN
                              ) assignmentExpression ]
+
+conditionalExpression ::= conditionalOrExpression [ QUESTION expression COLON conditionalExpression ]
 
 conditionalOrExpression ::= conditionalAndExpression { LOR conditionalAndExpression }
 

@@ -669,7 +669,7 @@ public class Parser {
      */
     private JExpression assignmentExpression() {
         int line = scanner.token().line();
-        JExpression lhs = conditionalOrExpression();
+        JExpression lhs = conditionalExpression();
         if (have(ALSHIFT_ASSIGN)) {
             return new JALeftShiftAssignOp(line, lhs, assignmentExpression());
         } else if (have(AND_ASSIGN)) {
@@ -698,12 +698,33 @@ public class Parser {
             return lhs;
         }
     }
+    /**
+     * Parses a conditional expression and returns an AST for it.
+     *
+     *<pre>
+     *     conditionalExpression ::= conditionalOrExpression
+     *                              [ QUESTION expression COLON conditionalExpression ]
+     *</pre>
+     *
+     * @return an AST for a conditional expression.
+     */
+    private JExpression conditionalExpression() {
+        int line = scanner.token().line();
+        JExpression lhs = conditionalOrExpression();
+        if (have(QUESTION)) {
+            JExpression thenExpression = expression();
+            mustBe(COLON);
+            JExpression elseExpression = conditionalExpression();
+            return new JConditionalExpression(line, lhs, thenExpression, elseExpression);
+        }
+        return lhs;
+    }
 
     /**
      * Parses a conditional-or expression and returns an AST for it.
      *
      * <pre>
-     *   conditionalOrExpression ::= conditionalAndExpression { LOR conditionalAndExperssion }
+     *   conditionalOrExpression ::= conditionalAndExpression { LOR conditionalAndExpression }
      * </pre>
      *
      * @return an AST for a conditional-or expression.

@@ -27,15 +27,30 @@
       - : classRep == double.class ? "D"
         : classRep == long.class ? "J"
 
-   Problem 2 (Operators): ...
-      Approach: ...
+   Problem 2 (Operators):
+      Approach:
 
-      Issues and resolution: ...
+      - similarly to how it was done in project 1, I added new functions such
+      as conditionalOrExpession. Found where operators belonged in expressions
+      added their features
 
-   Problem 3 (Conditional Expression): ...
-      Approach: ...
+      Issues and resolution:
+      - no issues, GS passed
 
-      Issues and resolution: ...
+   Problem 3 (Conditional Expression):
+      Approach:
+      - create new method for it and place in between assignment expression
+      and conditionalOR
+      - start like all other expressions
+      - studied other methods, notably referenceType()
+      - use mustBe to consume tokens, and parExpression
+      - jifstatement, takes 4 params, line condition, then else
+      - looked inside jConditionalExpression
+      - takes 4 parameters, line condition then else
+      - time consuming
+
+      Issues and resolution:
+      - no issues, worked on GS
 
    Problem 4 (Do Statement): ...
       Approach: ...
