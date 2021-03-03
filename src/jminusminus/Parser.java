@@ -105,14 +105,18 @@ public class Parser {
      * Parses a type declaration and returns an AST for it.
      *
      * <pre>
-     *   typeDeclaration ::= modifiers classDeclaration
+     *   typeDeclaration ::= modifiers ( classDeclaration | interfaceDeclaration)
      * </pre>
      *
      * @return an AST for a type declaration.
      */
     private JAST typeDeclaration() {
         ArrayList<String> mods = modifiers();
-        return classDeclaration(mods);
+        if (see(CLASS)) {
+            return classDeclaration(mods);
+        } else {
+            return interfaceDeclaration(mods);
+        }
     }
 
     /**
@@ -189,7 +193,8 @@ public class Parser {
      * Parses a class declaration and returns an AST for it.
      *
      * <pre>
-     *   classDeclaration ::= CLASS IDENTIFIER [ EXTENDS qualifiedIdentifier ] classBody
+     *   classDeclaration ::= CLASS IDENTIFIER [ EXTENDS qualifiedIdentifier ]
+     *                          [ IMPLEMENTS qualifiedIdentifier { COMMA qualifiedIdentifier } ] classBody
      * </pre>
      *
      * @param mods the class modifiers.
@@ -206,7 +211,42 @@ public class Parser {
         } else {
             superClass = Type.OBJECT;
         }
-        return new JClassDeclaration(line, mods, name, superClass, null, classBody());
+        ArrayList<TypeName> implementedInterfaces = new ArrayList<TypeName>();
+        if (have(IMPLEMENTS)) {
+            do {
+                implementedInterfaces.add(qualifiedIdentifier());
+            } while (have(COMMA));
+        } else {
+            implementedInterfaces = null;
+        }
+        return new JClassDeclaration(line, mods, name, superClass, implementedInterfaces, classBody());
+    }
+
+    /**
+     * Parses an interface declaration and returns an AST for it.
+     *
+     * <pre>
+     *   interfaceDeclaration ::= INTERFACE IDENTIFIER [ EXTENDS qualifiedIdentifier
+     *                                { COMMA qualifiedIdentifier } ] interfaceBody
+     * </pre>
+     *
+     * @param mods the interface modifiers.
+     * @return an AST for an interface declaration.
+     */
+    private JInterfaceDeclaration interfaceDeclaration(ArrayList<String> mods) {
+        int line = scanner.token().line();
+        mustBe(INTERFACE);
+        mustBe(IDENTIFIER);
+        String name = scanner.previousToken().image();
+        ArrayList<TypeName> superClassTypes = new ArrayList<TypeName>();
+        if (have(EXTENDS)) {
+            do {
+                superClassTypes.add(qualifiedIdentifier());
+            } while (have(COMMA));
+        } else {
+            superClassTypes = null;
+        }
+        return new JInterfaceDeclaration(line, mods, name, superClassTypes, interfaceBody());
     }
 
     /**
@@ -224,6 +264,26 @@ public class Parser {
         while (!see(RCURLY) && !see(EOF)) {
             ArrayList<String> mods = modifiers();
             members.add(memberDecl(mods));
+        }
+        mustBe(RCURLY);
+        return members;
+    }
+
+    /**
+     * Parses an interface body and returns a list of members in the body.
+     *
+     * <pre>
+     *   interfaceBody ::= LCURLY { modifiers interfaceMemberDecl } RCURLY
+     * </pre>
+     *
+     * @return a list of members in the interface body.
+     */
+    private ArrayList<JMember> interfaceBody() {
+        ArrayList<JMember> members = new ArrayList<JMember>();
+        mustBe(LCURLY);
+        while (!see(RCURLY) && !see(EOF)) {
+            ArrayList<String> mods = modifiers();
+            members.add(interfaceMemberDecl(mods));
         }
         mustBe(RCURLY);
         return members;
@@ -305,6 +365,64 @@ public class Parser {
             }
         }
         return memberDecl;
+    }
+
+    /**
+     * Parses an interfaceMember declaration and returns an AST for it.
+     *
+     * <pre>
+     *     interfaceMemberDecl ::= ( VOID | type ) IDENTIFIER formalParameters
+     *                                  [ THROWS qualifiedIdentifier { COMMA qualifiedIdentifier } ] SEMI
+     *                             | type variableDeclarators SEMI
+     * </pre>
+     *
+     * @param mods the interface member modifiers.
+     * @return an AST for an interface member declaration.
+     */
+    private JMember interfaceMemberDecl(ArrayList<String> mods) {
+        int line = scanner.token().line();
+        JMember interfaceMemberDecl = null;
+        Type type = null;
+        if (have(VOID)) {
+            // A void method.
+            type = Type.VOID;
+            mustBe(IDENTIFIER);
+            String name = scanner.previousToken().image();
+            ArrayList<JFormalParameter> params = formalParameters();
+            ArrayList<TypeName> exceptions = new ArrayList<TypeName>();
+            if (have(THROWS)) {
+                do {
+                    exceptions.add(qualifiedIdentifier());
+                } while (have(COMMA));
+            } else {
+                exceptions = null;
+            }
+            JBlock body = have(SEMI) ? null : block();
+            interfaceMemberDecl = new JMethodDeclaration(line, mods, name, type, params, exceptions, body);
+        } else {
+            type = type();
+            if (seeIdentLParen()) {
+                // A non void method.
+                mustBe(IDENTIFIER);
+                String name = scanner.previousToken().image();
+                ArrayList<JFormalParameter> params = formalParameters();
+                ArrayList<TypeName> exceptions = new ArrayList<TypeName>();
+                if (have(THROWS)) {
+                    do {
+                        exceptions.add(qualifiedIdentifier());
+                    } while (have(COMMA));
+                } else {
+                    exceptions = null;
+                }
+                JBlock body = have(SEMI) ? null : block();
+                interfaceMemberDecl = new JMethodDeclaration(line, mods, name, type, params, exceptions, body);
+            } else {
+                // A field.
+                interfaceMemberDecl = new JFieldDeclaration(line, mods, variableDeclarators(type));
+                mustBe(SEMI);
+            }
+        }
+        return interfaceMemberDecl;
     }
 
     /**
