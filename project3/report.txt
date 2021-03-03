@@ -1,186 +1,150 @@
 1. Enter the number of hours it took you to complete the project between
    the <<< and >>> signs below (eg, <<<10>>>).
 
-   <<<11>>>
+   <<<18>>>
    
 2. Enter the difficulty level (1: very easy; 5: very difficult) of the project
    between the <<< and >>> signs below (eg, <<<3>>>).
 
-   <<< >>>
+   <<<4>>>
 
 3. Provide a short description of how you approached each problem, issues you 
    encountered, and how you resolved those issues.
 
    Problem 1 (Long and Double Basic Types):
       Approach:
-      - searched for all instances of INT and added LONG and DOUBLE support
+
+      I searched for all instances of INT inside of Parser.java and Type.java
+      and added support for LONG and DOUBLE where appropriate.
 
       Issues and resolution:
-      - issue with parser parsing double instead of long in declaration for
-      - fibonacci as well as soem local vars
-      - found issue with missing class descriptor, looking for double.class
-      - and long.class, tracing for int.class
-      - tried Type.java field descriptors added in type.java
-      - private static String descriptorFor(Class<?> classRep) {
-      - to find out names, did a google search for jvm desciptor
-      - added missing
-      - : classRep == double.class ? "D"
-        : classRep == long.class ? "J"
+
+      I had some issues with parsing double instead of long in the
+      return type declaration for Fibonacci as well as some other local
+      variables. The issue was from missing class descriptors, found after
+      realizing that I had not updated the possible class representations in
+      descriptorFor() method. A Google search brought me to the JVM field
+      descriptor documentation. I added the proper descriptors "D" for double
+      and "J" for longs.
 
    Problem 2 (Operators):
       Approach:
 
-      - similarly to how it was done in project 1, I added new functions such
-      as conditionalOrExpession. Found where operators belonged in expressions
-      added their features
+      Similarly to how it was done in project 1, new methods such as
+      conditionalOrExpression() were added to reflect new changes to the
+      j-- grammar.
 
       Issues and resolution:
-      - no issues, GS passed
+
+      I had no issues.
 
    Problem 3 (Conditional Expression):
       Approach:
-      - create new method for it and place in between assignment expression
-      and conditionalOR
-      - start like all other expressions
-      - studied other methods, notably referenceType()
-      - use mustBe to consume tokens, and parExpression
-      - jifstatement, takes 4 params, line condition, then else
-      - looked inside jConditionalExpression
-      - takes 4 parameters, line condition then else
-      - time consuming
+
+      The constructor inside for a JConditionalExpression inside
+      JConditionalExpression.java provided a blueprint on how to pass the
+      correctly parsed parameters into building the object.
 
       Issues and resolution:
-      - no issues, worked on GS
+
+      I had no issues.
 
    Problem 4 (Do Statement):
       Approach:
-      - freebie from examples
+
+      This was a freebie from the chapter 3 exercises.
 
       Issues and resolution:
-      - noo issues
+
+      I had no issues.
 
    Problem 5 (For Statement):
       Approach:
-      - looked into JForStatement
-      - build similar to do, using mustbe
-      - for update, check other methods that use similar comma expression
-      and an arraylist
-      - couldn't figure out how to do the type cariableDeclarators
-      portion for forInit, hard stuck for a while
-      - realized JVariableDeclaration object extends JStatement
-      - that was a valid object to add to the ArrayList
-      - can't use localvariabledeclarstatement because it consumes the semicolon
-      - can copy paste the other stuff except that and pass it in
 
-      Issues and resolution: ...
+      The constructor for JForStatement outlined what needed to be passed in
+      to construct the object. I examined some other methods that utilized
+      an ArrayList<>.
 
-      luke@luke-elementaryos-desktop:~/workspace/j--$ bash ./bin/j-- -p project3/ForStatement.java | diff -u - project3/ForStatement.ast
-      project3/ForStatement.java:8: error: Literal sought where int found
-      project3/ForStatement.java:8: error: Invalid statement expression; it does not have a side-effect
-      project3/ForStatement.java:8: error: Invalid statement expression; it does not have a side-effect
-      --- -	2021-03-02 00:33:07.239728650 -0500
-      +++ project3/ForStatement.ast	2021-01-28 08:56:27.000000000 -0500
-      @@ -73,10 +73,20 @@
-                           {
-                               "Init":
-                               {
-      -                            "JStatementExpression:8":
-      +                            "JVariableDeclaration:8":
-                                   {
-      -                                "JWildExpression:8":
-      +                                "JVariableDeclarator:8":
-                                       {
-      +                                    "name": "i",
-      +                                    "type": "int",
-      +                                    "Initializer":
-      +                                    {
-      +                                        "JLiteralInt:8":
-      +                                        {
-      +                                            "type": "",
-      +                                            "value": "1"
-      +                                        }
-      +                                    }
-                                       }
-                                   }
-                               },
+      Issues and resolution:
 
-    - fixed an error, in forinit, use seeBasicType and seeRefType to know which
-    path to go into, was using see(IDENFTIFIER) previously, which was jsut wrong
-    - project3/ForStatement.java:8: error: Invalid statement expression; it does not have a side-effect
-    - this is my last issue
-    - seraching around statementExpression()
-    - saw that i was missing adding post inc and pre dec to statementexpression
-
+      I could not figure out how to pass a list of JVariableDeclaration
+      to the forInit() method and was hard stuck at this spot for a while.
+      I eventually realized on mousing over the JVariableDeclaration object
+      that it extended JStatement which cleared up confusion I had on the
+      provided hint. I pulled the code from the
+      localVariableDeclarationStatement() method instead of calling it because
+      that method consumed the semicolon in its parse. I fixed an error in
+      forInit() to use seeBasicType() || seeReferenceType() in order to branch
+      between a type variable declaration and statement expression instead of
+      using see(IDENTIFIER) which was just plain wrong. At this point, my parse
+      was generating the correct AST but I had one last issue with a
+      side-effect being generated. I realized I never implemented post-inc
+      and pre-dec functionality to statementExpression() as it was hinted in
+      problem 2.
 
    Problem 6 (Break Statement):
       Approach:
-      - checked jbreakstatement to see what it took for params,
-      just line number
-      create a new one, check for semi, return, easy cake
+
+      Implementation was trivial.
 
       Issues and resolution:
-      no issues
+
+      I had no issues.
 
    Problem 7 (Continue Statement):
-      Approach: same implementation as break statement
+      Approach:
+
+      Implementation was trivial.
 
       Issues and resolution:
 
-      no issues
-
+      I had no issues.
 
    Problem 8 (Switch Statement):
       Approach:
-      looked for ways to implement the hints, looked inside
-      jswitch statement, parameters took a list of switch statement group,
-      told me that i needed to build that list while parsing inside statement
-      - do while works, condition is simple enough to parse
 
-      - switch label, bit coonfused on what to return for defualt,
-      looking into jswitchstatement, for the json part, is a label is null it
-      is default, this tells me to return null if i parse default + colon
-
-      - some confusion on stop condition for adding switch labels
-      - just stop adding switch labels when there are no more case+ default!
-      - for adding blockstatements, used the provided hints
-
+      I used the hints to guide my approach, checking out the different
+      constructors in JSwitchStatement.java to figure out what kind of objects
+      needed to be passed around.
 
       Issues and resolution:
 
-      flawless execution
+      It was not immediately clear what switchLabel() should return in the
+      case of a DEFAULT being parsed. Looking at the json generating part of
+      JSwitchStatement.java showed that if a switchLabel was null, it would
+      tag it would add a Default tagged child. When to stop parsing
+      switchLabels was not clear at first, eventually I realized I could just
+      peek ahead to check for CASE or DEFAULT tokens.
 
    Problem 9 (Exception Handlers):
       Approach:
-       - throw statement simple to do, takes one expression
-       - try, takes a single block to start
-       - first attempt, pase a tryblock
-       - aray list of parameters and a array list of catch blocks
-       - didn't implement THROWS
-       - everything else is working afte commenting out that that section
-       - check the jconstructordeclar and jmethoddec to see what parameters it takes
-       - just need to intercept THROWS and parse all the qualified Identifiers, the exceptions
-       - pass as arraylist of TypeName to the method and contructor declaratioons
-       - done for both void and non void methods
 
-
+      Throw statement implementation was trivial. Again, studying the
+      constructors for the various objects outlined what parameters needed to
+      be passed in to build the try statement as well as modifying the
+      memberDecl() method to implement throws.
 
       Issues and resolution:
 
-      project3/ExceptionHandlers.java:25: error: throws found where { sought
-      project3/ExceptionHandlers.java:25: error: Literal sought where throws found
-      project3/ExceptionHandlers.java:25: error: Invalid statement expression; it does not have a side-effect
-      project3/ExceptionHandlers.java:29: error: Type sought where return found
-
-      - issue with my ast throwing empty set of braces []
-      - all other code not working now, some issue with parsing [] in main method
-      - "throws": [],
-      - fixed issue by passing null if exceptions arraylist of typename is empty
-
+      I had some issues with my AST throwing an empty set of braces in parsing
+      the main method of the test case ("throws": [],). I tracked this down to
+      some issue with exceptions ArrayList<TypeName> in the
+      JMethodDeclaration(). I fixed the issue by setting ArrayList to null if
+      there is no THROWS token parsed. I am not 100% sure why the braces
+      were thrown if nothing is added into that ArrayList.
 
    Problem 10 (Interface Type Declaration):
       Approach:
 
+      The grammars for the classDeclaration, classBody, and memberDecl are all
+      similar to that of the interface side: interfaceDeclaration,
+      interfaceBody, and interfaceMemberDecl. I was able to copy paste much
+      of the code and reuse it with some modifications where the grammars
+      differed.
+
       Issues and resolution:
+
+      I had no issues.
 
 4. Did you receive help from anyone? List their names, status (classmate, 
    CS451/651 grad, TA, other), and the nature of help received.
@@ -194,4 +158,5 @@
    much you learned from doing the assignment, and whether you enjoyed
    doing it.
 
-   ...
+   The grammar.pdf from the website uses DEFLT as a token where it is DEFAULT
+   from the previous homework.
