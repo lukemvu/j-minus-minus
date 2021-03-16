@@ -31,8 +31,8 @@
       Approach:
 
       Similarly to how it was done in project 1, new methods such as
-      conditionalOrExpression() were added to reflect new changes to the
-      j-- grammar.
+      conditionalOrExpression() were added into Parser.java to reflect
+       new changes to the j-- grammar.
 
       Issues and resolution:
 
@@ -41,9 +41,10 @@
    Problem 3 (Conditional Expression):
       Approach:
 
-      The constructor inside for a JConditionalExpression inside
+      The constructor for JConditionalExpression inside
       JConditionalExpression.java provided a blueprint on how to pass the
-      correctly parsed parameters into building the object.
+      correctly parsed parameters into building the object: int line,
+      JExpression condition, JExpression thenPart, JExpression elsePart.
 
       Issues and resolution:
 
@@ -52,7 +53,8 @@
    Problem 4 (Do Statement):
       Approach:
 
-      This was a freebie from the chapter 3 exercises.
+      This was a freebie from the chapter 3 exercises. I'm calling statement()
+      and parExpression() and checking for DO, WHILE, and SEMI tokens.
 
       Issues and resolution:
 
@@ -85,7 +87,8 @@
    Problem 6 (Break Statement):
       Approach:
 
-      Implementation was trivial.
+      Implementation was trivial. There is a JBreakStatement() function I can
+      call to parse the break statement.
 
       Issues and resolution:
 
@@ -94,7 +97,8 @@
    Problem 7 (Continue Statement):
       Approach:
 
-      Implementation was trivial.
+      Implementation was trivial. There is a JContinueStatement() function I
+      can call to parse the continue statement.
 
       Issues and resolution:
 
@@ -112,9 +116,9 @@
       It was not immediately clear what switchLabel() should return in the
       case of a DEFAULT being parsed. Looking at the json generating part of
       JSwitchStatement.java showed that if a switchLabel was null, it would
-      tag it would add a Default tagged child. When to stop parsing
-      switchLabels was not clear at first, eventually I realized I could just
-      peek ahead to check for CASE or DEFAULT tokens.
+      add a Default tagged child. When to stop parsing switchLabels was not
+      clear at first, eventually I realized I could just peek ahead to check
+      for CASE or DEFAULT tokens.
 
    Problem 9 (Exception Handlers):
       Approach:
@@ -130,8 +134,7 @@
       the main method of the test case ("throws": [],). I tracked this down to
       some issue with exceptions ArrayList<TypeName> in the
       JMethodDeclaration(). I fixed the issue by setting ArrayList to null if
-      there is no THROWS token parsed. I am not 100% sure why the braces
-      were thrown if nothing is added into that ArrayList.
+      there is no THROWS token parsed.
 
    Problem 10 (Interface Type Declaration):
       Approach:
@@ -140,7 +143,8 @@
       similar to that of the interface side: interfaceDeclaration,
       interfaceBody, and interfaceMemberDecl. I was able to copy paste much
       of the code and reuse it with some modifications where the grammars
-      differed.
+      differed. I added an additional option of parsing an
+      interfaceDeclaration() to the typeDeclaration() method.
 
       Issues and resolution:
 
@@ -152,11 +156,12 @@
    Name               Status       Help Received
    ----               ------       -------------
 
-   ...                ...          ...
+   J. Michaud           TA          suggestions for debugging
 
 5. List any other comments here. Feel free to provide any feedback on how
    much you learned from doing the assignment, and whether you enjoyed
    doing it.
 
    The grammar.pdf from the website uses DEFLT as a token where it is DEFAULT
-   from the previous homework.
+   from the previous homework. This threw me for a loop trying to ctrl-f
+   DEFLT and not finding it anywhere.
