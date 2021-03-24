@@ -9,6 +9,7 @@
 "//" { ~( "\n" | "\r" ) } ( "\n" | "\r" ["\n"] )
 
 // Multi line comment -- ignored
+"/*" { ~( "*/" ) } "*/"
 
 // Reserved words
 ABSTRACT       ::= "abstract"

@@ -102,11 +102,18 @@ PARSER_END(JavaCCParser)
 SKIP: { " " | "\t" | "\n" | "\r" | "\f" }
 
 // Single line comment -- ignored
-SKIP: { <BEGIN_COMMENT: "//">: IN_SINGLE_LINE_COMMENT }
+SKIP: { <BEGIN_SINGLE_COMMENT: "//">: IN_SINGLE_LINE_COMMENT }
 <IN_SINGLE_LINE_COMMENT>
-SKIP: { <END_COMMENT: "\n" | "\r" | "\r\n">: DEFAULT }
+SKIP: { <END_SINGLE_COMMENT: "\n" | "\r" | "\r\n">: DEFAULT }
 <IN_SINGLE_LINE_COMMENT>
-SKIP: { <COMMENT: ~[]> }
+SKIP: { <SINGLE_LINE_COMMENT: ~[]> }
+
+// Multi line comment -- ignored
+SKIP: { <BEGIN_MULTI_COMMENT: "/*">: IN_MULTI_LINE_COMMENT }
+<IN_MULTI_LINE_COMMENT>
+SKIP: { <END_MULTI_COMMENT: "*/">: DEFAULT }
+<IN_MULTI_LINE_COMMENT>
+SKIP: { <MULTI_LINE_COMMENT: ~[]> }
 
 // Reserved words
 TOKEN: {

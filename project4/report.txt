@@ -14,9 +14,24 @@
    Part I (Additions to JavaCC Scanner)
 
    Problem 1 (Multiline Comment)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      I had some initial confusion over what the ~ character was doing in.
+      I checked out the documentation for javacc from:
+      https://javacc.github.io/javacc/documentation/grammar.html
+      After studying the grammar for single line comments I realized that it
+      was just simply a not operator, e.g.: "/*" { ~( "*/" ) } "*/"
+      The regular expression for a multi line comment included any
+      characters that was not "*/" in between a pair of "/*" and "*/".
+
+      I followed the code for single line comment to implement multiline
+      similarly, entering into a multi line comment state after scanning a
+      "/*", skipping all chars, then exiting back into the default state after
+      scanning in a "*/".
+
+      Issues and resolution:
+
+      I had no issues here.
 
    Problem 2 (Operators)
       Approach: ...
