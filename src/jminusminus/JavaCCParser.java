@@ -447,8 +447,8 @@ line = token.beginLine;
         case MINUS:
         case IDENTIFIER:
         case INT_LITERAL:
-        case CHAR_LITERAL:
-        case STRING_LITERAL:{
+        case STRING_LITERAL:
+        case CHAR_LITERAL:{
           ;
           break;
           }
@@ -490,8 +490,8 @@ recoverFromError(new int[] { SEMI, EOF }, e);
         case MINUS:
         case IDENTIFIER:
         case INT_LITERAL:
-        case CHAR_LITERAL:
-        case STRING_LITERAL:{
+        case STRING_LITERAL:
+        case CHAR_LITERAL:{
           statement = statement();
           break;
           }
@@ -551,8 +551,8 @@ line = token.beginLine;
         case MINUS:
         case IDENTIFIER:
         case INT_LITERAL:
-        case CHAR_LITERAL:
-        case STRING_LITERAL:{
+        case STRING_LITERAL:
+        case CHAR_LITERAL:{
           expr = expression();
           break;
           }
@@ -590,8 +590,8 @@ statement = new JWhileStatement(line, test, body);
       case MINUS:
       case IDENTIFIER:
       case INT_LITERAL:
-      case CHAR_LITERAL:
-      case STRING_LITERAL:{
+      case STRING_LITERAL:
+      case CHAR_LITERAL:{
         // Must be a statementExpression.
                 statement = statementExpression();
         jj_consume_token(SEMI);
@@ -761,8 +761,8 @@ recoverFromError(new int[] { SEMI, EOF }, e);
       case MINUS:
       case IDENTIFIER:
       case INT_LITERAL:
-      case CHAR_LITERAL:
-      case STRING_LITERAL:{
+      case STRING_LITERAL:
+      case CHAR_LITERAL:{
         initializer = expression();
         break;
         }
@@ -798,8 +798,8 @@ line = token.beginLine;
       case MINUS:
       case IDENTIFIER:
       case INT_LITERAL:
-      case CHAR_LITERAL:
-      case STRING_LITERAL:{
+      case STRING_LITERAL:
+      case CHAR_LITERAL:{
         anInitializer = variableInitializer(type.componentType());
 initials.add(anInitializer);
         label_9:
@@ -848,8 +848,8 @@ recoverFromError(new int[] { SEMI, EOF }, e);
       case MINUS:
       case IDENTIFIER:
       case INT_LITERAL:
-      case CHAR_LITERAL:
-      case STRING_LITERAL:{
+      case STRING_LITERAL:
+      case CHAR_LITERAL:{
         anExpression = expression();
 args.add(anExpression);
         label_10:
@@ -1270,8 +1270,8 @@ expr = new JNegateOp(line, unaryExpr);
       case LNOT:
       case IDENTIFIER:
       case INT_LITERAL:
-      case CHAR_LITERAL:
-      case STRING_LITERAL:{
+      case STRING_LITERAL:
+      case CHAR_LITERAL:{
         expr = simpleUnaryExpression();
         break;
         }
@@ -1326,8 +1326,8 @@ expr = new JCastOp(line, type, simpleUnaryExpr);
           case LPAREN:
           case IDENTIFIER:
           case INT_LITERAL:
-          case CHAR_LITERAL:
-          case STRING_LITERAL:{
+          case STRING_LITERAL:
+          case CHAR_LITERAL:{
             expr = postfixExpression();
             break;
             }
@@ -1521,8 +1521,8 @@ expr = new JMessageExpression(line, null, ambiguousPart(id), id.simpleName(), ar
       case NULL:
       case TRUE:
       case INT_LITERAL:
-      case CHAR_LITERAL:
-      case STRING_LITERAL:{
+      case STRING_LITERAL:
+      case CHAR_LITERAL:{
         expr = literal();
         break;
         }
@@ -1798,17 +1798,6 @@ expr = new JWildExpression(token.beginLine);
     try { return (!jj_3_12()); }
     catch(LookaheadSuccess ls) { return true; }
     finally { jj_save(11, xla); }
-  }
-
-  private boolean jj_3R_39()
- {
-    if (jj_3R_42()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_43()) { jj_scanpos = xsp; break; }
-    }
-    return false;
   }
 
   private boolean jj_3R_108()
@@ -2672,6 +2661,17 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
+  private boolean jj_3R_39()
+ {
+    if (jj_3R_42()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_43()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
   /** Generated Token Manager. */
   public JavaCCParserTokenManager token_source;
   SimpleCharStream jj_input_stream;
@@ -2704,7 +2704,7 @@ expr = new JWildExpression(token.beginLine);
 	   jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x32,0x32,0x32,0x32,0x0,0x0,0x0,0x0,0x32,0x0,0x32,0x0,0x32,0x0,0x0,0x0,0x0,0x0,0x80,0x80,0x4,0x0,0x9,0x9,0x60,0x60,0x100,0x32,0x10,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
 	}
 	private static void jj_la1_init_3() {
-	   jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x4,0x0,0x4,0xe4,0xe4,0xe4,0xe4,0x0,0x4,0x0,0x0,0xe4,0x0,0xe4,0x0,0xe4,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xe4,0x0,0xe4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xe4,0x4,0x0,0x0,0x0,0xe0,};
+	   jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x4,0x0,0x4,0x1844,0x1844,0x1844,0x1844,0x0,0x4,0x0,0x0,0x1844,0x0,0x1844,0x0,0x1844,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1844,0x0,0x1844,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1844,0x4,0x0,0x0,0x0,0x1840,};
 	}
   final private JJCalls[] jj_2_rtns = new JJCalls[12];
   private boolean jj_rescan = false;
@@ -2917,7 +2917,7 @@ expr = new JWildExpression(token.beginLine);
   /** Generate ParseException. */
   public ParseException generateParseException() {
 	 jj_expentries.clear();
-	 boolean[] la1tokens = new boolean[106];
+	 boolean[] la1tokens = new boolean[111];
 	 if (jj_kind >= 0) {
 	   la1tokens[jj_kind] = true;
 	   jj_kind = -1;
@@ -2940,7 +2940,7 @@ expr = new JWildExpression(token.beginLine);
 		 }
 	   }
 	 }
-	 for (int i = 0; i < 106; i++) {
+	 for (int i = 0; i < 111; i++) {
 	   if (la1tokens[i]) {
 		 jj_expentry = new int[1];
 		 jj_expentry[0] = i;

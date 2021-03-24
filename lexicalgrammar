@@ -108,12 +108,18 @@ IDENTIFIER     ::= ( "a"..."z" | "A"..."Z" | "_" | "$" )
                        { "a"..."z" | "A"..."Z" | "_" | "0"..."9" | "$" }
 
 // Literals
-INT_LITERAL    ::= ( "0"..."9" ) { "0"..."9" }
+DIGITS         ::= ( "0"..."9" ) { "0"..."9" }
+INT_LITERAL    ::= DIGITS
+LONG_LITERAL   ::= INT_LITERAL ( "l" | "L" )
+EXPONENT       ::= ( "e" | "E" ) [ ( "+" | "-" ) ] DIGITS
+SUFFIX         ::= "d" | "D"
+DOUBLE_LITERAL ::= DIGITS "." [ DIGITS ] [ EXPONENT ] [ SUFFIX ]
+                 | "." DIGITS [ EXPONENT ] [ SUFFIX ]
+                 | DIGITS EXPONENT [ SUFFIX ]
+                 | DIGITS [ EXPONENT ] SUFFIX
 ESC            ::= "\\" ( "n" | "r" | "t" | "b" | "f" | "'" | "\"" | "\\" )
 STRING_LITERAL ::= "\"" { ESC | ~( "\"" | "\\" | "\n" | "\r" ) } "\""
 CHAR_LITERAL   ::= "'" ( ESC | ~( "'" | "\n" | "\r" | "\\" ) ) "'"
-LONG_LITERAL   ::= INT_LITERAL ( "l" | "L" )
-DOUBLE_LITERAL ::=
 
 // End of file
 EOF            ::= "<end of file>"

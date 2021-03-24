@@ -201,15 +201,25 @@ public interface JavaCCParserConstants {
   /** RegularExpression Id. */
   int DIGIT = 100;
   /** RegularExpression Id. */
-  int INT_LITERAL = 101;
+  int DIGITS = 101;
   /** RegularExpression Id. */
-  int CHAR_LITERAL = 102;
+  int INT_LITERAL = 102;
   /** RegularExpression Id. */
-  int STRING_LITERAL = 103;
+  int LONG_LITERAL = 103;
   /** RegularExpression Id. */
-  int ESC = 104;
+  int EXPONENT = 104;
   /** RegularExpression Id. */
-  int ERROR = 105;
+  int SUFFIX = 105;
+  /** RegularExpression Id. */
+  int DOUBLE_LITERAL = 106;
+  /** RegularExpression Id. */
+  int STRING_LITERAL = 107;
+  /** RegularExpression Id. */
+  int CHAR_LITERAL = 108;
+  /** RegularExpression Id. */
+  int ESC = 109;
+  /** RegularExpression Id. */
+  int ERROR = 110;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -321,9 +331,14 @@ public interface JavaCCParserConstants {
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
+    "<DIGITS>",
     "<INT_LITERAL>",
-    "<CHAR_LITERAL>",
+    "<LONG_LITERAL>",
+    "<EXPONENT>",
+    "<SUFFIX>",
+    "<DOUBLE_LITERAL>",
     "<STRING_LITERAL>",
+    "<CHAR_LITERAL>",
     "<ESC>",
     "<ERROR>",
   };

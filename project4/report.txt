@@ -54,9 +54,18 @@
       I had no issues here.
 
    Problem 4 (Literals)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      I followed the lexical grammar for Java to add additional literal
+      tokens to j--.jj. New private tokens such as DIGITS, EXPONENT, and
+      SUFFIX were added as well. To implement optional tokens such as
+      [ <EXPONENT> ], I used ( <EXPONENT> )?.
+
+      Issues and resolution:
+
+      I had a mess of incorrect lines that after a while I realized was due
+      to a typo on the "e" and "E" scan. I originally had it as " e " and
+      " E ".
 
    Part II (Additions to JavaCC Parser)
 

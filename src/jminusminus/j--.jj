@@ -222,9 +222,17 @@ TOKEN: {
 
 // Literals
 TOKEN: {
-  <INT_LITERAL: <DIGIT> ( <DIGIT> )*>
-| <CHAR_LITERAL: "'" ( <ESC> | ~[ "'", "\\", "\n", "\r" ]) "'">
+  <#DIGITS: <DIGIT> ( <DIGIT> )*>
+| <INT_LITERAL: <DIGITS>>
+| <LONG_LITERAL: <INT_LITERAL> ( "l" | "L" )>
+| <#EXPONENT: ( "e" | "E" ) ( "+" | "-" )? <DIGITS>>
+| <#SUFFIX: "d" | "D">
+| <DOUBLE_LITERAL: (<DIGITS> "." ( <DIGITS> )? ( <EXPONENT> )? ( <SUFFIX> )?)
+                 | ("." <DIGITS> ( <EXPONENT> )? ( <SUFFIX> )?)
+                 | (<DIGITS> <EXPONENT> ( <SUFFIX> )?)
+                 | (<DIGITS> ( <EXPONENT> )? <SUFFIX>)>
 | <STRING_LITERAL: "\"" ( <ESC> | ~[ "\"", "\\", "\n", "\r" ] )* "\"">
+| <CHAR_LITERAL: "'" ( <ESC> | ~[ "'", "\\", "\n", "\r" ]) "'">
 | <#ESC: "\\" [ "n", "t", "b", "r", "f", "\\", "'", "\"" ]>
 }
 
