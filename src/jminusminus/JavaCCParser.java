@@ -447,6 +447,8 @@ line = token.beginLine;
         case MINUS:
         case IDENTIFIER:
         case INT_LITERAL:
+        case LONG_LITERAL:
+        case DOUBLE_LITERAL:
         case STRING_LITERAL:
         case CHAR_LITERAL:{
           ;
@@ -490,6 +492,8 @@ recoverFromError(new int[] { SEMI, EOF }, e);
         case MINUS:
         case IDENTIFIER:
         case INT_LITERAL:
+        case LONG_LITERAL:
+        case DOUBLE_LITERAL:
         case STRING_LITERAL:
         case CHAR_LITERAL:{
           statement = statement();
@@ -551,6 +555,8 @@ line = token.beginLine;
         case MINUS:
         case IDENTIFIER:
         case INT_LITERAL:
+        case LONG_LITERAL:
+        case DOUBLE_LITERAL:
         case STRING_LITERAL:
         case CHAR_LITERAL:{
           expr = expression();
@@ -590,6 +596,8 @@ statement = new JWhileStatement(line, test, body);
       case MINUS:
       case IDENTIFIER:
       case INT_LITERAL:
+      case LONG_LITERAL:
+      case DOUBLE_LITERAL:
       case STRING_LITERAL:
       case CHAR_LITERAL:{
         // Must be a statementExpression.
@@ -761,6 +769,8 @@ recoverFromError(new int[] { SEMI, EOF }, e);
       case MINUS:
       case IDENTIFIER:
       case INT_LITERAL:
+      case LONG_LITERAL:
+      case DOUBLE_LITERAL:
       case STRING_LITERAL:
       case CHAR_LITERAL:{
         initializer = expression();
@@ -798,6 +808,8 @@ line = token.beginLine;
       case MINUS:
       case IDENTIFIER:
       case INT_LITERAL:
+      case LONG_LITERAL:
+      case DOUBLE_LITERAL:
       case STRING_LITERAL:
       case CHAR_LITERAL:{
         anInitializer = variableInitializer(type.componentType());
@@ -848,6 +860,8 @@ recoverFromError(new int[] { SEMI, EOF }, e);
       case MINUS:
       case IDENTIFIER:
       case INT_LITERAL:
+      case LONG_LITERAL:
+      case DOUBLE_LITERAL:
       case STRING_LITERAL:
       case CHAR_LITERAL:{
         anExpression = expression();
@@ -1270,6 +1284,8 @@ expr = new JNegateOp(line, unaryExpr);
       case LNOT:
       case IDENTIFIER:
       case INT_LITERAL:
+      case LONG_LITERAL:
+      case DOUBLE_LITERAL:
       case STRING_LITERAL:
       case CHAR_LITERAL:{
         expr = simpleUnaryExpression();
@@ -1326,6 +1342,8 @@ expr = new JCastOp(line, type, simpleUnaryExpr);
           case LPAREN:
           case IDENTIFIER:
           case INT_LITERAL:
+          case LONG_LITERAL:
+          case DOUBLE_LITERAL:
           case STRING_LITERAL:
           case CHAR_LITERAL:{
             expr = postfixExpression();
@@ -1521,6 +1539,8 @@ expr = new JMessageExpression(line, null, ambiguousPart(id), id.simpleName(), ar
       case NULL:
       case TRUE:
       case INT_LITERAL:
+      case LONG_LITERAL:
+      case DOUBLE_LITERAL:
       case STRING_LITERAL:
       case CHAR_LITERAL:{
         expr = literal();
@@ -1666,6 +1686,11 @@ recoverFromError(new int[] { SEMI, EOF }, e);
 expr = new JLiteralChar(token.beginLine, token.image);
         break;
         }
+      case DOUBLE_LITERAL:{
+        jj_consume_token(DOUBLE_LITERAL);
+expr = new JLiteralDouble(token.beginLine, token.image);
+        break;
+        }
       case FALSE:{
         jj_consume_token(FALSE);
 expr = new JLiteralBoolean(token.beginLine, token.image);
@@ -1674,6 +1699,11 @@ expr = new JLiteralBoolean(token.beginLine, token.image);
       case INT_LITERAL:{
         jj_consume_token(INT_LITERAL);
 expr = new JLiteralInt(token.beginLine, token.image);
+        break;
+        }
+      case LONG_LITERAL:{
+        jj_consume_token(LONG_LITERAL);
+expr = new JLiteralLong(token.beginLine, token.image);
         break;
         }
       case NULL:{
@@ -1800,7 +1830,7 @@ expr = new JWildExpression(token.beginLine);
     finally { jj_save(11, xla); }
   }
 
-  private boolean jj_3R_108()
+  private boolean jj_3R_110()
  {
     if (jj_scan_token(COMMA)) return true;
     if (jj_3R_27()) return true;
@@ -1815,13 +1845,13 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
-  private boolean jj_3R_104()
+  private boolean jj_3R_106()
  {
     if (jj_3R_27()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_108()) { jj_scanpos = xsp; break; }
+      if (jj_3R_110()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -1886,7 +1916,7 @@ expr = new JWildExpression(token.beginLine);
     if (jj_scan_token(LPAREN)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_104()) jj_scanpos = xsp;
+    if (jj_3R_106()) jj_scanpos = xsp;
     if (jj_scan_token(RPAREN)) return true;
     return false;
   }
@@ -1953,10 +1983,10 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
-  private boolean jj_3R_111()
+  private boolean jj_3R_113()
  {
     if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_110()) return true;
+    if (jj_3R_112()) return true;
     return false;
   }
 
@@ -1983,13 +2013,13 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
-  private boolean jj_3R_109()
+  private boolean jj_3R_111()
  {
-    if (jj_3R_110()) return true;
+    if (jj_3R_112()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_111()) { jj_scanpos = xsp; break; }
+      if (jj_3R_113()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -2031,12 +2061,12 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
-  private boolean jj_3R_105()
+  private boolean jj_3R_107()
  {
     if (jj_scan_token(LCURLY)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_109()) jj_scanpos = xsp;
+    if (jj_3R_111()) jj_scanpos = xsp;
     if (jj_scan_token(RCURLY)) return true;
     return false;
   }
@@ -2103,33 +2133,51 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
-  private boolean jj_3R_99()
+  private boolean jj_3R_101()
  {
     if (jj_scan_token(TRUE)) return true;
     return false;
   }
 
-  private boolean jj_3R_98()
+  private boolean jj_3R_100()
  {
     if (jj_scan_token(STRING_LITERAL)) return true;
     return false;
   }
 
-  private boolean jj_3R_113()
+  private boolean jj_3R_99()
+ {
+    if (jj_scan_token(NULL)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_98()
+ {
+    if (jj_scan_token(LONG_LITERAL)) return true;
+    return false;
+  }
+
+  private boolean jj_3R_115()
  {
     if (jj_3R_27()) return true;
     return false;
   }
 
-  private boolean jj_3R_112()
+  private boolean jj_3R_97()
  {
-    if (jj_3R_105()) return true;
+    if (jj_scan_token(INT_LITERAL)) return true;
     return false;
   }
 
-  private boolean jj_3R_97()
+  private boolean jj_3R_114()
  {
-    if (jj_scan_token(NULL)) return true;
+    if (jj_3R_107()) return true;
+    return false;
+  }
+
+  private boolean jj_3R_96()
+ {
+    if (jj_scan_token(FALSE)) return true;
     return false;
   }
 
@@ -2140,15 +2188,9 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
-  private boolean jj_3R_96()
- {
-    if (jj_scan_token(INT_LITERAL)) return true;
-    return false;
-  }
-
   private boolean jj_3R_95()
  {
-    if (jj_scan_token(FALSE)) return true;
+    if (jj_scan_token(DOUBLE_LITERAL)) return true;
     return false;
   }
 
@@ -2169,13 +2211,13 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
-  private boolean jj_3R_110()
+  private boolean jj_3R_112()
  {
     Token xsp;
     xsp = jj_scanpos;
-    if (!jj_3R_112()) return false;
+    if (!jj_3R_114()) return false;
     jj_scanpos = xsp;
-    if (jj_3R_113()) return true;
+    if (jj_3R_115()) return true;
     return false;
   }
 
@@ -2199,7 +2241,11 @@ expr = new JWildExpression(token.beginLine);
     jj_scanpos = xsp;
     if (!jj_3R_98()) return false;
     jj_scanpos = xsp;
-    if (jj_3R_99()) return true;
+    if (!jj_3R_99()) return false;
+    jj_scanpos = xsp;
+    if (!jj_3R_100()) return false;
+    jj_scanpos = xsp;
+    if (jj_3R_101()) return true;
     return false;
   }
 
@@ -2227,7 +2273,7 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
-  private boolean jj_3R_100()
+  private boolean jj_3R_102()
  {
     if (jj_3R_92()) return true;
     return false;
@@ -2240,7 +2286,7 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
-  private boolean jj_3R_107()
+  private boolean jj_3R_109()
  {
     if (jj_scan_token(LBRACK)) return true;
     if (jj_scan_token(RBRACK)) return true;
@@ -2261,7 +2307,7 @@ expr = new JWildExpression(token.beginLine);
     if (jj_3R_37()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_100()) jj_scanpos = xsp;
+    if (jj_3R_102()) jj_scanpos = xsp;
     return false;
   }
 
@@ -2314,7 +2360,7 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
-  private boolean jj_3R_106()
+  private boolean jj_3R_108()
  {
     if (jj_scan_token(LBRACK)) return true;
     if (jj_3R_27()) return true;
@@ -2379,7 +2425,7 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
-  private boolean jj_3R_103()
+  private boolean jj_3R_105()
  {
     if (jj_scan_token(LBRACK)) return true;
     if (jj_3R_27()) return true;
@@ -2387,11 +2433,11 @@ expr = new JWildExpression(token.beginLine);
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_106()) { jj_scanpos = xsp; break; }
+      if (jj_3R_108()) { jj_scanpos = xsp; break; }
     }
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_107()) { jj_scanpos = xsp; break; }
+      if (jj_3R_109()) { jj_scanpos = xsp; break; }
     }
     return false;
   }
@@ -2444,9 +2490,9 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
-  private boolean jj_3R_102()
+  private boolean jj_3R_104()
  {
-    if (jj_3R_105()) return true;
+    if (jj_3R_107()) return true;
     return false;
   }
 
@@ -2458,7 +2504,7 @@ expr = new JWildExpression(token.beginLine);
 
   private boolean jj_3R_91()
  {
-    if (jj_3R_103()) return true;
+    if (jj_3R_105()) return true;
     return false;
   }
 
@@ -2483,7 +2529,7 @@ expr = new JWildExpression(token.beginLine);
     return false;
   }
 
-  private boolean jj_3R_101()
+  private boolean jj_3R_103()
  {
     if (jj_scan_token(LBRACK)) return true;
     if (jj_scan_token(RBRACK)) return true;
@@ -2528,10 +2574,10 @@ expr = new JWildExpression(token.beginLine);
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
-      if (jj_3R_101()) { jj_scanpos = xsp; break; }
+      if (jj_3R_103()) { jj_scanpos = xsp; break; }
     }
     xsp = jj_scanpos;
-    if (jj_3R_102()) jj_scanpos = xsp;
+    if (jj_3R_104()) jj_scanpos = xsp;
     return false;
   }
 
@@ -2704,7 +2750,7 @@ expr = new JWildExpression(token.beginLine);
 	   jj_la1_2 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x32,0x32,0x32,0x32,0x0,0x0,0x0,0x0,0x32,0x0,0x32,0x0,0x32,0x0,0x0,0x0,0x0,0x0,0x80,0x80,0x4,0x0,0x9,0x9,0x60,0x60,0x100,0x32,0x10,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
 	}
 	private static void jj_la1_init_3() {
-	   jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x4,0x0,0x4,0x1844,0x1844,0x1844,0x1844,0x0,0x4,0x0,0x0,0x1844,0x0,0x1844,0x0,0x1844,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1844,0x0,0x1844,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1844,0x4,0x0,0x0,0x0,0x1840,};
+	   jj_la1_3 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x4,0x4,0x0,0x4,0x1cc4,0x1cc4,0x1cc4,0x1cc4,0x0,0x4,0x0,0x0,0x1cc4,0x0,0x1cc4,0x0,0x1cc4,0x0,0x0,0x0,0x0,0x4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1cc4,0x0,0x1cc4,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1cc4,0x4,0x0,0x0,0x0,0x1cc0,};
 	}
   final private JJCalls[] jj_2_rtns = new JJCalls[12];
   private boolean jj_rescan = false;

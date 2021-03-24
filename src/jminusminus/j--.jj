@@ -1616,7 +1616,8 @@ private JNewArrayOp newArrayDeclarator(Type type):
  * Parses a literal and returns an AST for it.
  *
  * <pre>
- *   literal ::= CHAR_LITERAL | FALSE | INT_LITERAL | NULL | STRING_LITERAL | TRUE
+ *   literal ::= CHAR_LITERAL | DOUBLE_LITERAL | FALSE | INT_LITERAL
+               | LONG_LITERAL | NULL | STRING_LITERAL | TRUE
  * </pre>
  *
  * @return an AST for a literal.
@@ -1629,10 +1630,14 @@ private JExpression literal():
     try {
         <CHAR_LITERAL>
         { expr = new JLiteralChar(token.beginLine, token.image); } |
+        <DOUBLE_LITERAL>
+        { expr = new JLiteralDouble(token.beginLine, token.image); } |
         <FALSE>
         { expr = new JLiteralBoolean(token.beginLine, token.image); } |
         <INT_LITERAL>
         { expr = new JLiteralInt(token.beginLine, token.image); } |
+        <LONG_LITERAL>
+        { expr = new JLiteralLong(token.beginLine, token.image); } |
         <NULL>
         { expr = new JLiteralNull(token.beginLine); } |
         <STRING_LITERAL>
