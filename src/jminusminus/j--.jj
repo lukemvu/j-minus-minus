@@ -141,6 +141,22 @@ TOKEN: {
 | <TRUE: "true">
 | <VOID: "void">
 | <WHILE: "while">
+| <BREAK: "break">
+| <DOUBLE: "double">
+| <SWITCH: "switch">
+| <CASE: "case">
+| <FINALLY: "finally">
+| <THROW: "throw">
+| <CATCH: "catch">
+| <FOR: "for">
+| <THROWS: "throws">
+| <CONTINUE: "continue">
+| <IMPLEMENTS: "implements">
+| <TRY: "try">
+| <DEFLT: "default">
+| <INTERFACE: "interface">
+| <DO: "do">
+| <LONG: "long">
 }
 
 // Separators
@@ -170,6 +186,31 @@ TOKEN: {
 | <PLUS: "+">
 | <PLUS_ASSIGN: "+=">
 | <STAR: "*">
+| <DIV: "/">
+| <REM: "%">
+| <NOT: "~">
+| <OR: "|">
+| <XOR: "^">
+| <AND: "&">
+| <ALSHIFT: "<<">
+| <ARSHIFT: ">>">
+| <LRSHIFT: ">>>">
+| <QUESTION: "?">
+| <COLON: ":">
+| <NOT_EQUAL: "!=">
+| <DIV_ASSIGN: "/=">
+| <MINUS_ASSIGN: "-=">
+| <STAR_ASSIGN: "*=">
+| <REM_ASSIGN: "%=">
+| <ARSHIFT_ASSIGN: ">>=">
+| <LRSHIFT_ASSIGN: ">>>=">
+| <GE: ">=">
+| <ALSHIFT_ASSIGN: "<<=">
+| <LT: "<">
+| <XOR_ASSIGN: "^=">
+| <OR_ASSIGN: "|=">
+| <LOR: "||">
+| <AND_ASSIGN: "&=">
 }
 
 // Identifiers

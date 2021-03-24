@@ -34,14 +34,24 @@
       I had no issues here.
 
    Problem 2 (Operators)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      I added support for the 25 additional operators by listing them in the
+      operator tokens section of j--.jj in the proper format.
+
+      Issues and resolution:
+
+      I had no issues here.
 
    Problem 3 (Reserved Words)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      I added support for the 16 additional reserved words by listing them in
+      the reserved words tokens section of j--.jj in the proper format.
+
+      Issues and resolution:
+
+      I had no issues here.
 
    Problem 4 (Literals)
       Approach: ...
