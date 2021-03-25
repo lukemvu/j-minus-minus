@@ -1107,7 +1107,7 @@ private JExpression expression():
  * Parses an assignment expression and returns an AST for it.
  *
  * <pre>
- *   assignmentExpression ::= conditionalOrExpression
+ *   assignmentExpression ::= conditionalExpression
  *                              [ ( ALSHIFT_ASSIGN | AND_ASSIGN | ARSHIFT_ASSIGN
  *                              | ASSIGN | DIV_ASSIGN | LRSHIFT_ASSIGN
  *                              | MINUS_ASSIGN | OR_ASSIGN | PLUS_ASSIGN
@@ -1124,7 +1124,7 @@ private JExpression assignmentExpression():
 }
 {
     try {
-        lhs = conditionalOrExpression()
+        lhs = conditionalExpression()
         { line = lhs.line(); }
         [
             <ALSHIFT_ASSIGN>
@@ -1180,27 +1180,27 @@ private JExpression assignmentExpression():
  *
  * @return an AST for a conditional expression.
  */
-//private JExpression conditionalExpression():
-//{
-//    int line = 0;
-//    JExpression lhs = null, thenExpression = null, elseExpression = null;
-//}
-//{
-//    try {
-//        lhs = conditionalOrExpression()
-//        { line = lhs.line(); }
-//        [
-//            <QUESTION>
-//            thenExpression = expression()
-//            <COLON>
-//            elseExpression = conditionalExpression()
-//        ]
-//    } catch (ParseException e) {
-//        recoverFromError(new int[] { SEMI, EOF }, e);
-//    }
-//    { return lhs; }
-//}
-//TODO
+private JExpression conditionalExpression():
+{
+    int line = 0;
+    JExpression lhs = null, thenExpression = null, elseExpression = null;
+}
+{
+    try {
+        lhs = conditionalOrExpression()
+        { line = lhs.line(); }
+        [
+            <QUESTION>
+            thenExpression = expression()
+            <COLON>
+            elseExpression = conditionalExpression()
+            { lhs = new JConditionalExpression(line, lhs, thenExpression, elseExpression); }
+        ]
+    } catch (ParseException e) {
+        recoverFromError(new int[] { SEMI, EOF }, e);
+    }
+    { return lhs; }
+}
 
 
 /**

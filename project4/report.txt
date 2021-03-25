@@ -82,14 +82,35 @@
       having '/' yet implemented in j--.jj.
 
    Problem 6 (Operators)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      I pulled up my Parser.java file and went down the file cross-referencing
+      it with j--.jj to figure out which places needed to be edited and which
+      new methods needed to be added to j--.jj. Instead of a chain of if-else
+      statements, the "|" was used to decide between possible operators in the
+      parse and return statement. Instead of having to use a while loop, I
+      could use the kleene star operator "()*" for parsing multiple
+      arguments. "[]" brackets were usable in parsing optional arguments.
+
+      Issues and resolution:
+
+      I had a couple of errors where some "x" was found where some other token
+      was expected; those were just errors in not updating the correct tokens
+      to parse (e.g. <LAND> instead of <OR>).
 
    Problem 7 (Conditional Expression)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      The first first block declares and initializes local variables line, lhs,
+      thenExpression, and elseExpression. The optional argument is placed into
+      a set of brackets. I look for a QUESTION token then parse an expression()
+      followed by a COLON token then conditionalExpression(). lhs is assigned
+      to a new JConditionalExpression() and this gets returned at the end of
+      conditionalExpression().
+
+      Issues and resolution:
+
+      I had no issues here.
 
    Problem 8 (Do Statement)
       Approach: ...
