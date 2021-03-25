@@ -113,14 +113,36 @@
       I had no issues here.
 
    Problem 8 (Do Statement)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      I added an alternate parse for <DO> into statement(). I was careful to
+      pass the right argument types into creating the new JDoStatement()
+      object.
+
+      Issues and resolution:
+
+      I had no issues here.
 
    Problem 9 (For Statement)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      I started by coding out the section in statement(), building out the
+      FOR regular expression with required PAREN and SEMI tokens. Additional
+      local variables were added to the first block for the required parameters
+      of the JForStatement(). For forInit(), I pulled code from
+      localVariableDeclarationStatement() to build out the
+      "type variableDeclarators" portion of the forInit grammar. Local
+      variables were initialized for the various arrays and statements. I used
+      LOOKAHEAD() to check for a type to decide to parse the
+      "type variableDeclarators" portion. The "statement { COMMA
+      statementExpression }" portion parsed a single statementExpression() then
+      an arbitrary amount more for every COMMA token. forUpdate() was done
+      similarly to how the "statement { COMMA statementExpression }" portion
+      of the forInit grammar was done.
+
+      Issues and resolution:
+
+      I had no issues here.
 
    Problem 10 (Break Statement)
       Approach: ...

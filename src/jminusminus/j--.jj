@@ -631,16 +631,36 @@ private JStatement blockStatement():
 private JStatement statement():
 {
     int line = 0;
-    JStatement statement  = null;
-    JExpression test      = null;
-    JStatement consequent = null;
-    JStatement alternate  = null;
-    JStatement body       = null;
-    JExpression expr      = null;
+    JStatement statement            = null;
+    JExpression test                = null;
+    JStatement consequent           = null;
+    JStatement alternate            = null;
+    JStatement body                 = null;
+    JExpression expr                = null;
+    ArrayList<JStatement> init      = null;
+    ArrayList<JStatement> update    = null;
 }
 {
     try {
         statement = block() |
+        <DO>
+        { line = token.beginLine; }
+        body = statement()
+        <WHILE>
+        test = parExpression()
+        <SEMI>
+        {statement = new JDoStatement(line, body, test); } |
+        <FOR>
+        { line = token.beginLine; }
+        <LPAREN>
+        [ init = forInit() ]
+        <SEMI>
+        [ test = expression() ]
+        <SEMI>
+        [ update = forUpdate() ]
+        <RPAREN>
+        body = statement()
+        { statement = new JForStatement(line, init, test, update, body); } |
         <IF>
         { line = token.beginLine; }
         test = parExpression()
@@ -762,6 +782,79 @@ private JExpression parExpression():
     }
     { return expr; }
 }
+
+
+/**
+ * Parses and returns a list of 'for init' expressions.
+ *
+ * <pre>
+ *     forInit ::= statementExpression { COMMA statementExpression } | type variableDeclarators
+ * </pre>
+ *
+ * @return a list of 'for init' expressions.
+ */
+private ArrayList<JStatement> forInit():
+{
+    int line = 0;
+    JStatement forInitStatement = null;
+    ArrayList<JStatement> forInitStatements = new ArrayList<JStatement>();
+    Type type = null;
+    ArrayList<JVariableDeclarator> vdecls = null;
+}
+{
+    try {
+        LOOKAHEAD(type())
+        type = type()
+        { line = token.beginLine; }
+        vdecls = variableDeclarators(type)
+        { forInitStatements.add(new JVariableDeclaration(line, vdecls)); } |
+        (
+            forInitStatement = statementExpression()
+            { forInitStatements.add(forInitStatement); }
+            (
+                <COMMA>
+                forInitStatement = statementExpression()
+                { forInitStatements.add(forInitStatement); }
+            )*
+        )
+    } catch (ParseException e) {
+        recoverFromError(new int[] { SEMI, EOF }, e);
+    }
+    { return forInitStatements; }
+}
+//TODO
+
+
+/**
+ * Parses and returns a list of 'for update' expressions.
+ *
+ * <pre>
+ *     forUpdate ::= statementExpression { COMMA statementExpression }
+ * </pre>
+ *
+ * @return a list of 'for update' expressions.
+ */
+private ArrayList<JStatement> forUpdate():
+{
+    JStatement forUpdateStatement = null;
+    ArrayList<JStatement> forUpdateStatements = new ArrayList<JStatement>();
+}
+{
+    try {
+        forUpdateStatement = statementExpression()
+        { forUpdateStatements.add(forUpdateStatement); }
+        (
+            <COMMA>
+            forUpdateStatement = statementExpression()
+            { forUpdateStatements.add(forUpdateStatement); }
+        )*
+    } catch (ParseException e) {
+        recoverFromError(new int[] { SEMI, EOF }, e);
+    }
+    { return forUpdateStatements; }
+}
+//TODO
+
 
 /**
  * Parses a local variable declaration statement and returns an AST for it.
