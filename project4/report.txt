@@ -145,14 +145,23 @@
       I had no issues here.
 
    Problem 10 (Break Statement)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      If a BREAK token is parsed in, I store the line number, parse a SEMI
+      token, and assign statement to a new JBreakStatement().
+
+      Issues and resolution:
+
+      I had no issues here.
 
    Problem 11 (Continue Statement)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      This was done similarly to the break statement.
+
+      Issues and resolution:
+
+      I had no issues here.
 
    Problem 12 (Switch Statement)
       Approach: ...

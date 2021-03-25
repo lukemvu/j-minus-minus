@@ -643,6 +643,14 @@ private JStatement statement():
 {
     try {
         statement = block() |
+        <BREAK>
+        { line = token.beginLine; }
+        <SEMI>
+        { statement = new JBreakStatement(line); } |
+        <CONTINUE>
+        { line = token.beginLine; }
+        <SEMI>
+        { statement = new JContinueStatement(line); } |
         <DO>
         { line = token.beginLine; }
         body = statement()
