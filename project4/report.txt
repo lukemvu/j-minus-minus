@@ -70,9 +70,16 @@
    Part II (Additions to JavaCC Parser)
 
    Problem 5 (Long and Double Basic Types)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      I added LONG and DOUBLE support to literal() method and basicType()
+      method, following the structure of how INT, BOOLEAN, and CHAR were
+      implemented.
+
+      Issues and resolution:
+
+      I failed the test cases for BasicTypes but I think this is due to not
+      having '/' yet implemented in j--.jj.
 
    Problem 6 (Operators)
       Approach: ...

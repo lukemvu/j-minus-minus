@@ -937,7 +937,7 @@ public class Parser {
      * Parses an assignment expression and returns an AST for it.
      *
      * <pre>
-     *   assignmentExpression ::= conditionalOrExpression
+     *   assignmentExpression ::= conditionalExpression
      *                              [ ( ALSHIFT_ASSIGN | AND_ASSIGN | ARSHIFT_ASSIGN
      *                              | ASSIGN | DIV_ASSIGN | LRSHIFT_ASSIGN
      *                              | MINUS_ASSIGN | OR_ASSIGN | PLUS_ASSIGN
@@ -1281,8 +1281,8 @@ public class Parser {
      * Parses a simple unary expression and returns an AST for it.
      *
      * <pre>
-     *   simpleUnaryExpression ::= COMPLEMENT unaryExpression
-     *                           | LNOT unaryExpression
+     *   simpleUnaryExpression ::= LNOT unaryExpression
+     *                           | NOT unaryExpression
      *                           | LPAREN basicType RPAREN unaryExpression
      *                           | LPAREN referenceType RPAREN simpleUnaryExpression
      *                           | postfixExpression
