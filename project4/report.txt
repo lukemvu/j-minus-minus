@@ -1,7 +1,7 @@
 1. Enter the number of hours it took you to complete the project between
    the <<< and >>> signs below (eg, <<<10>>>).
 
-   <<< >>>
+   <<<15>>>
    
 2. Enter the difficulty level (1: very easy; 5: very difficult) of the project
    between the <<< and >>> signs below (eg, <<<3>>>).
@@ -205,9 +205,69 @@
       I had no issues here.
 
    Problem 14 (Interface Type Declaration)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      interfaceMemberDecl() was very similar in structure to memberDecl().
+      The first parse option of IDENTIFIER formalParameters was dropped and
+      possibility of a block statement in the JMethodDeclaration() of the
+      inerfaceMemberDecl() was removed. interfaceBody() is identical in
+      structure to classBody() so I swapped out memberDecl() for
+      interfaceMemberDecl(). The same procedure was done for
+      interfaceDeclaration() from classDeclaration(), swapping classBody() for
+      interfaceBody(), CLASS token for INTERFACE token, and IMPLEMENTS token
+      to the EXTENDS token.
+
+      Issues and resolution:
+
+      typeDeclaration() is where I ran into a couple issues. First I had
+      this error:
+
+      project4/Interface.java:6: error: "class" found where one of
+          "abstract"...
+          "private"...
+          "protected"...
+          "public"...
+          "static"... sought
+
+      I was improperly using LOOKAHEAD()--I didn't need to use it at all.
+      I next ran into this error:
+
+      luke@luke-elementaryos-desktop:~/workspace/j--$ bash ./bin/javaccj-- -p
+      project4/Interface.java | diff -u - project4/Interface.ast
+      --- -   2021-03-25 17:26:50.496064183 -0400
+      +++ project4/Interface.ast      2021-02-04 11:20:20.000000000 -0500
+      @@ -5,6 +5,7 @@
+               "imports": ["java.lang.Integer", "java.lang.System"],
+               "JInterfaceDeclaration:4":
+               {
+      +            "modifiers": [],
+                   "name": "Factorial",
+                   "super": "java.lang.Object",
+                   "JMethodDeclaration:5":
+
+      My code was missing that line ""modifiers": [],". I was able to narrow
+      this down to some kind of issue in typeDeclaration(). "mods" was being
+      passed as "null" to the interfaceDeclaration() which is why it wasn't
+      adding that empty list of modifiers. Originally I had my code written
+      as such. The syntax was incorrect and as a result modifiers() was not
+      being called if the interfaceDeclaration() was parsed.
+
+              mods = modifiers()
+              (
+                  classDeclaration = classDeclaration(mods)
+              ) |
+              (
+                  classDeclaration = interfaceDeclaration(mods)
+              )
+
+      The code was fixed to the following:
+
+              mods = modifiers()
+              (
+                  classDeclaration = classDeclaration(mods) |
+                  classDeclaration = interfaceDeclaration(mods)
+              )
+
 
 4. Did you receive help from anyone? List their names, status (classmate, 
    CS451/651 grad, TA, other), and the nature of help received.

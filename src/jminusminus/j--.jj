@@ -346,7 +346,10 @@ private JAST typeDeclaration():
 {
     try {
         mods = modifiers()
-        classDeclaration = classDeclaration(mods)
+        (
+            classDeclaration = classDeclaration(mods) |
+            classDeclaration = interfaceDeclaration(mods)
+        )
     } catch (ParseException e) {
         recoverFromError(new int[] { SEMI, EOF }, e);
     }
@@ -446,6 +449,8 @@ private JClassDeclaration classDeclaration(ArrayList<String> mods):
     String name = "";
     Type superClass = Type.OBJECT;
     ArrayList<JMember> classBody = null;
+    TypeName implementedInterface = null;
+    ArrayList<TypeName> implementedInterfaces = null;
 }
 {
     try {
@@ -457,13 +462,66 @@ private JClassDeclaration classDeclaration(ArrayList<String> mods):
             <EXTENDS>
             superClass = qualifiedIdentifier()
         ]
+        [
+            <IMPLEMENTS>
+            { implementedInterfaces = new ArrayList<TypeName>(); }
+            implementedInterface = qualifiedIdentifier()
+            { implementedInterfaces.add(implementedInterface); }
+            (
+                <COMMA>
+                implementedInterface = qualifiedIdentifier()
+                { implementedInterfaces.add(implementedInterface); }
+            )*
+        ]
         classBody = classBody()
     } catch (ParseException e) {
         recoverFromError(new int[] { SEMI, EOF }, e);
     }
-    { return new JClassDeclaration(line, mods, name, superClass, null, classBody); }
+    { return new JClassDeclaration(line, mods, name, superClass, implementedInterfaces, classBody); }
 }
 
+/**
+ * Parses an interface declaration and returns an AST for it.
+ *
+ * <pre>
+ *   interfaceDeclaration ::= INTERFACE IDENTIFIER [ EXTENDS qualifiedIdentifier
+ *                                { COMMA qualifiedIdentifier } ] interfaceBody
+ * </pre>
+ *
+ * @param mods the interface modifiers.
+ * @return an AST for an interface declaration.
+ */
+private JInterfaceDeclaration interfaceDeclaration(ArrayList<String> mods):
+{
+    int line = 0;
+    String name = "";
+    TypeName superClassType = null;
+    ArrayList<TypeName> superClassTypes = null;
+    ArrayList<JMember> interfaceBody = null;
+}
+{
+    try {
+        <INTERFACE>
+        { line = token.beginLine; }
+        <IDENTIFIER>
+        { name = token.image; }
+        [
+            <EXTENDS>
+            { superClassTypes = new ArrayList<TypeName>(); }
+            superClassType = qualifiedIdentifier()
+            { superClassTypes.add(superClassType); }
+            (
+                <COMMA>
+                superClassType = qualifiedIdentifier()
+                { superClassTypes.add(superClassType); }
+            )*
+        ]
+        interfaceBody = interfaceBody()
+    } catch (ParseException e) {
+        recoverFromError(new int[] { SEMI, EOF }, e);
+    }
+    { return new JInterfaceDeclaration(line, mods, name, superClassTypes, interfaceBody); }
+}
 /**
  * Parses a class body and returns a list of members in the body.
  *
@@ -494,6 +552,37 @@ private ArrayList<JMember> classBody():
     { return members; }
 }
 
+/**
+ * Parses an interface body and returns a list of members in the body.
+ *
+ * <pre>
+ *   interfaceBody ::= LCURLY { modifiers interfaceMemberDecl } RCURLY
+ * </pre>
+ *
+ * @return a list of members in the interface body.
+ */
+private ArrayList<JMember> interfaceBody():
+{
+
+    ArrayList<String> mods = null;
+    JMember interfaceMember = null;
+    ArrayList<JMember> members = null;
+}
+{
+    try {
+        <LCURLY>
+        { members = new ArrayList<JMember>(); }
+        (
+            mods = modifiers()
+            interfaceMember = interfaceMemberDecl(mods)
+            { members.add(interfaceMember); }
+        )*
+        <RCURLY>
+    } catch (ParseException e) {
+        recoverFromError(new int[] { SEMI, EOF }, e);
+    }
+    { return members; }
+}
 /**
  * Parses a member declaration and returns an AST for it.
  *
@@ -583,6 +672,68 @@ private JMember memberDecl(ArrayList<String> mods):
     { return memberDecl; }
 }
 
+/**
+ * Parses an interfaceMember declaration and returns an AST for it.
+ *
+ * <pre>
+ *     interfaceMemberDecl ::= ( VOID | type ) IDENTIFIER formalParameters
+ *                                  [ THROWS qualifiedIdentifier { COMMA qualifiedIdentifier } ] SEMI
+ *                             | type variableDeclarators SEMI
+ * </pre>
+ *
+ * @param mods the interface member modifiers.
+ * @return an AST for an interface member declaration.
+ */
+private JMember interfaceMemberDecl(ArrayList<String> mods):
+{
+    int line = 0;
+    Type type = null;
+    String name = "";
+    ArrayList<JFormalParameter> params = null;
+    ArrayList<JVariableDeclarator> variableDeclarators = null;
+    JMember interfaceDecl = null;
+    TypeName qualifiedIdentifier = null;
+    ArrayList<TypeName> exceptions = null;
+}
+{
+    try {
+        LOOKAHEAD((<VOID> | type()) <IDENTIFIER> <LPAREN>)
+        (
+            (
+                <VOID>
+                { type = Type.VOID; } |
+                type = type()
+            )
+            { line = token.beginLine; }
+            <IDENTIFIER>
+            { name = token.image; }
+            params = formalParameters()
+            [
+                <THROWS>
+                { exceptions = new ArrayList<TypeName>(); }
+                qualifiedIdentifier = qualifiedIdentifier()
+                { exceptions.add(qualifiedIdentifier); }
+                (
+                    <COMMA>
+                    qualifiedIdentifier = qualifiedIdentifier()
+                    { exceptions.add(qualifiedIdentifier); }
+                )*
+            ]
+            <SEMI>
+            { interfaceDecl = new JMethodDeclaration(line, mods, name, type, params, exceptions, null); }
+        ) |
+        (
+            type = type()
+            { line = token.beginLine; }
+            variableDeclarators = variableDeclarators(type)
+            { interfaceDecl = new JFieldDeclaration(line, mods, variableDeclarators); }
+            <SEMI>
+        )
+    } catch (ParseException e) {
+        recoverFromError(new int[] { SEMI, EOF }, e);
+    }
+    { return interfaceDecl; }
+}
 /**
  * Parses a block and returns an AST for it.
  *
@@ -961,6 +1112,8 @@ private SwitchStatementGroup switchBlockStatementGroup():
         switchLabel = switchLabel()
         { switchLabels.add(switchLabel); }
         (
+            // Adding look ahead to get rid of warning
+            LOOKAHEAD(switchLabel())
             switchLabel = switchLabel()
             { switchLabels.add(switchLabel); }
         )*
