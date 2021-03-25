@@ -515,6 +515,8 @@ private JMember memberDecl(ArrayList<String> mods):
     JBlock body = null;
     ArrayList<JVariableDeclarator> variableDeclarators = null;
     JMember memberDecl = null;
+    TypeName qualifiedIdentifier = null;
+    ArrayList<TypeName> exceptions = null;
 }
 {
     try {
@@ -526,8 +528,19 @@ private JMember memberDecl(ArrayList<String> mods):
                 name = token.image;
             }
             params = formalParameters()
+            [
+                <THROWS>
+                { exceptions = new ArrayList<TypeName>(); }
+                qualifiedIdentifier = qualifiedIdentifier()
+                { exceptions.add(qualifiedIdentifier); }
+                (
+                    <COMMA>
+                    qualifiedIdentifier = qualifiedIdentifier()
+                    { exceptions.add(qualifiedIdentifier); }
+                )*
+            ]
             body = block()
-            { memberDecl = new JConstructorDeclaration(line, mods, name, params, null, body); }
+            { memberDecl = new JConstructorDeclaration(line, mods, name, params, exceptions, body); }
         ) |
         LOOKAHEAD((<VOID> | type()) <IDENTIFIER> <LPAREN>)
         (
@@ -539,12 +552,23 @@ private JMember memberDecl(ArrayList<String> mods):
             { line = token.beginLine; }
             <IDENTIFIER>
             { name = token.image; }
-            params = formalParameters() 
+            params = formalParameters()
+            [
+                <THROWS>
+                { exceptions = new ArrayList<TypeName>(); }
+                qualifiedIdentifier = qualifiedIdentifier()
+                { exceptions.add(qualifiedIdentifier); }
+                (
+                    <COMMA>
+                    qualifiedIdentifier = qualifiedIdentifier()
+                    { exceptions.add(qualifiedIdentifier); }
+                )*
+            ]
             (
                 body = block() |
                 <SEMI>
             )
-            { memberDecl = new JMethodDeclaration(line, mods, name, type, params, null, body); }
+            { memberDecl = new JMethodDeclaration(line, mods, name, type, params, exceptions, body); }
         ) |
         (
             type = type()
@@ -631,14 +655,22 @@ private JStatement blockStatement():
 private JStatement statement():
 {
     int line = 0;
-    JStatement statement            = null;
-    JExpression test                = null;
-    JStatement consequent           = null;
-    JStatement alternate            = null;
-    JStatement body                 = null;
-    JExpression expr                = null;
-    ArrayList<JStatement> init      = null;
-    ArrayList<JStatement> update    = null;
+    JStatement statement                           = null;
+    JExpression test                               = null;
+    JStatement consequent                          = null;
+    JStatement alternate                           = null;
+    JStatement body                                = null;
+    JExpression expr                               = null;
+    ArrayList<JStatement> init                     = null;
+    ArrayList<JStatement> update                   = null;
+    SwitchStatementGroup switchBlockStatementGroup = null;
+    ArrayList<SwitchStatementGroup> statementGroup = null;
+    JBlock tryBlock                                = null;
+    JFormalParameter parameter                     = null;
+    ArrayList<JFormalParameter> parameters         = null;
+    JBlock catchBlock                              = null;
+    ArrayList<JBlock> catchBlocks                  = null;
+    JBlock finallyBlock                            = null;
 }
 {
     try {
@@ -693,6 +725,47 @@ private JStatement statement():
             line = token.beginLine;
             statement = new JEmptyStatement( line );
         } |
+        <SWITCH>
+        {
+            line = token.beginLine;
+            statementGroup = new ArrayList<SwitchStatementGroup>();
+        }
+        test = parExpression()
+        <LCURLY>
+        (
+            switchBlockStatementGroup = switchBlockStatementGroup()
+            { statementGroup.add(switchBlockStatementGroup); }
+        )*
+        <RCURLY>
+        { statement = new JSwitchStatement(line, test, statementGroup); } |
+        <THROW>
+        { line = token.beginLine; }
+        expr = expression()
+        <SEMI>
+        { statement = new JThrowStatement(line, expr); } |
+        <TRY>
+        {
+            line = token.beginLine;
+            parameters = new ArrayList<JFormalParameter>();
+            catchBlocks = new ArrayList<JBlock>();
+        }
+        tryBlock = block()
+        (
+            <CATCH>
+            <LPAREN>
+            parameter = formalParameter()
+            <RPAREN>
+            catchBlock = block()
+            {
+                parameters.add(parameter);
+                catchBlocks.add(catchBlock);
+            }
+        )*
+        [
+            <FINALLY>
+            finallyBlock = block()
+        ]
+        { statement = new JTryStatement(line, tryBlock, parameters, catchBlocks, finallyBlock); } |
         <WHILE>
         { line = token.beginLine; }
         test = parExpression()
@@ -830,7 +903,6 @@ private ArrayList<JStatement> forInit():
     }
     { return forInitStatements; }
 }
-//TODO
 
 
 /**
@@ -861,8 +933,78 @@ private ArrayList<JStatement> forUpdate():
     }
     { return forUpdateStatements; }
 }
-//TODO
 
+
+/**
+ * Parses and returns a switch-statement group.
+ *
+ * <pre>
+ *     switchBlockStatementGroup ::= switchLabel { switchLabel } { blockStatemment }
+ * </pre>
+ *
+ * @return a switch-statement group.
+ */
+private SwitchStatementGroup switchBlockStatementGroup():
+{
+    SwitchStatementGroup switchStatementGroup = null;
+    JExpression switchLabel = null;
+    JStatement blockStatement = null;
+    ArrayList<JExpression> switchLabels = null;
+    ArrayList<JStatement> block = null;
+}
+{
+    try {
+        {
+            switchLabels = new ArrayList<JExpression>();
+            block = new ArrayList<JStatement>();
+        }
+        switchLabel = switchLabel()
+        { switchLabels.add(switchLabel); }
+        (
+            switchLabel = switchLabel()
+            { switchLabels.add(switchLabel); }
+        )*
+        (
+            blockStatement = blockStatement()
+            { block.add(blockStatement); }
+        )*
+        { switchStatementGroup = new SwitchStatementGroup(switchLabels, block);}
+    } catch (ParseException e) {
+        recoverFromError(new int[] { SEMI, EOF }, e);
+    }
+    { return switchStatementGroup; }
+}
+
+
+/**
+ * Parses and returns a switch label expression.
+ *
+ * <pre>
+ *     switchLabel ::= CASE expression COLON | DEFAULT COLON
+ * </pre>
+ *
+ * @return a switch label expression.
+ */
+private JExpression switchLabel():
+{
+    JExpression expression = null;
+}
+{
+    try {
+        (
+            <CASE>
+            expression = expression()
+            <COLON>
+        ) |
+        (
+            <DEFLT>
+            <COLON>
+        )
+    } catch (ParseException e) {
+        recoverFromError(new int[] { SEMI, EOF }, e);
+    }
+    { return expression; }
+}
 
 /**
  * Parses a local variable declaration statement and returns an AST for it.

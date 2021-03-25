@@ -6,7 +6,7 @@
 2. Enter the difficulty level (1: very easy; 5: very difficult) of the project
    between the <<< and >>> signs below (eg, <<<3>>>).
 
-   <<< >>>
+   <<<3>>>
 
 3. Provide a short description of how you approached each problem, issues you 
    encountered, and how you resolved those issues.
@@ -164,14 +164,45 @@
       I had no issues here.
 
    Problem 12 (Switch Statement)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      I started with coding out the statement() section, building out the SWITCH
+      regular expression with required LCURLY and RCURLY tokens, returning
+      a JSwitchStatement() at the end with parameters line, JExpression from
+      the parExpression(), and an ArrayList<SwitchStatementGroup> from
+      adding the zero or more occurrences of switchBlockStatementGroup().
+      To handle zero or more occurrences, "()*" was used. switchLabel()
+      returned either a JExpression or null depending on whether a CASE or
+      DEFLT token was found. switchBlockStatementGroup() returned a
+      SwitchStatementGroup that consisted of an ArrayList of the switch labels
+      and block statements. Again, "()*" was used to handle zero or more
+      occurrences of switchLabel and blockStatement; at least one switchLabel
+      was required so I was sure to parse at least one occurrence.
+
+      Issues and resolution:
+
+      I had a bunch of null pointer exceptions; reading the errors
+      in the compiled JavaCCParser.java I realized it was from initializing
+      arraylists but assigning them to null. I needed to initialize empty list,
+      not null lists. This fixed those issues and everything compiled and
+      generated the AST successfully.
 
    Problem 13 (Exception Handlers)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      THROW was a simple implementation; I'm looking for THROW and SEMI tokens
+      around a single expression and return a JThrowStatement. Parsing TRY
+      involved first parsing the required block then zero or more "()*"
+      occurrences of CATCH blocks; each parameter and catchBlock were added
+      to their respective ArrayList. The finally block was implemented with
+      brackets "[]" to implement zero or one occurrence. Code was added to
+      the memberDecl() to implement the THROWS statement, parsing potential
+      qualifiedIdentifiers. An ArrayList<TypeName>() was instantiated to add
+      the qualifiedIdentifiers to.
+
+      Issues and resolution:
+
+      I had no issues here.
 
    Problem 14 (Interface Type Declaration)
       Approach: ...
