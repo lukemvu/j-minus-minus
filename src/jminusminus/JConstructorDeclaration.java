@@ -73,6 +73,10 @@ class JConstructorDeclaration extends JMethodDeclaration implements JMember {
         // Declare the parameters. We consider a formal parameter to be always initialized, via a
         // method call.
         for (JFormalParameter param : params) {
+            // Skip an offset for longs and doubles
+            if (param.type() == Type.DOUBLE || param.type() == Type.LONG) {
+                this.context.nextOffset();
+            }
             LocalVariableDefn defn = new LocalVariableDefn(param.type(), this.context.nextOffset());
             defn.initialize();
             this.context.addEntry(param.line(), param.name(), defn);

@@ -64,6 +64,10 @@ class JArrayExpression extends JExpression implements JLhs {
             output.addNoArgInstruction(BALOAD);
         } else if (type == Type.CHAR) {
             output.addNoArgInstruction(CALOAD);
+        } else if (type == Type.LONG) {
+            output.addNoArgInstruction(LALOAD);
+        } else if (type == Type.DOUBLE) {
+            output.addNoArgInstruction(DALOAD);
         } else if (!type.isPrimitive()) {
             output.addNoArgInstruction(AALOAD);
         }
@@ -104,6 +108,10 @@ class JArrayExpression extends JExpression implements JLhs {
             output.addNoArgInstruction(BALOAD);
         } else if (type == Type.CHAR) {
             output.addNoArgInstruction(CALOAD);
+        } else if (type == Type.LONG) {
+            output.addNoArgInstruction(LALOAD);
+        } else if (type == Type.DOUBLE) {
+            output.addNoArgInstruction(DALOAD);
         } else if (!type.isPrimitive()) {
             output.addNoArgInstruction(AALOAD);
         }
@@ -126,6 +134,10 @@ class JArrayExpression extends JExpression implements JLhs {
             output.addNoArgInstruction(BASTORE);
         } else if (type == Type.CHAR) {
             output.addNoArgInstruction(CASTORE);
+        } else if (type == Type.LONG) {
+            output.addNoArgInstruction(LASTORE);
+        } else if (type == Type.DOUBLE) {
+            output.addNoArgInstruction(DASTORE);
         } else if (!type.isPrimitive()) {
             output.addNoArgInstruction(AASTORE);
         }

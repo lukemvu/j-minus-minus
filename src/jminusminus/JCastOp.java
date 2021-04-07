@@ -94,17 +94,28 @@ class Conversions {
         // Populate the table.
         put(Type.CHAR, Type.INT, Converter.Identity);
         put(Type.INT, Type.CHAR, new I2C());
+        put(Type.INT, Type.LONG, new I2L());
+        put(Type.INT, Type.DOUBLE, new I2D());
+        put(Type.LONG, Type.DOUBLE, new L2D());
+        put(Type.LONG, Type.INT, new L2I());
+        put(Type.DOUBLE, Type.INT, new D2I());
+        put(Type.DOUBLE, Type.LONG, new D2L());
 
         // Boxing.
         put(Type.CHAR, Type.BOXED_CHAR, new Boxing(Type.CHAR, Type.BOXED_CHAR));
         put(Type.INT, Type.BOXED_INT, new Boxing(Type.INT, Type.BOXED_INT));
         put(Type.BOOLEAN, Type.BOXED_BOOLEAN, new Boxing(Type.BOOLEAN, Type.BOXED_BOOLEAN));
+        put(Type.LONG, Type.BOXED_LONG, new Boxing(Type.LONG, Type.BOXED_LONG));
+        put(Type.DOUBLE, Type.BOXED_DOUBLE, new Boxing(Type.DOUBLE, Type.BOXED_DOUBLE));
+
 
         // Un-boxing.
         put(Type.BOXED_CHAR, Type.CHAR, new UnBoxing(Type.BOXED_CHAR, Type.CHAR, "charValue"));
         put(Type.BOXED_INT, Type.INT, new UnBoxing(Type.BOXED_INT, Type.INT, "intValue"));
         put(Type.BOXED_BOOLEAN, Type.BOOLEAN, new UnBoxing(Type.BOXED_BOOLEAN, Type.BOOLEAN,
                 "booleanValue"));
+        put(Type.BOXED_LONG, Type.LONG, new UnBoxing(Type.BOXED_LONG, Type.LONG, "longValue"));
+        put(Type.BOXED_DOUBLE, Type.DOUBLE, new UnBoxing(Type.BOXED_DOUBLE, Type.DOUBLE, "doubleValue"));
     }
 
     /**
@@ -256,5 +267,77 @@ class I2C implements Converter {
      */
     public void codegen(CLEmitter output) {
         output.addNoArgInstruction(I2C);
+    }
+}
+
+/**
+ * An int to long converter.
+ */
+class I2L implements Converter {
+    /**
+     * {@inheritDoc}
+     */
+    public void codegen(CLEmitter output) {
+        output.addNoArgInstruction(I2L);
+    }
+}
+
+/**
+ * An int to double converter.
+ */
+class I2D implements Converter {
+    /**
+     * {@inheritDoc}
+     */
+    public void codegen(CLEmitter output) {
+        output.addNoArgInstruction(I2D);
+    }
+}
+
+/**
+ * A long to double converter.
+ */
+class L2D implements Converter {
+    /**
+     * {@inheritDoc}
+     */
+    public void codegen(CLEmitter output) {
+        output.addNoArgInstruction(L2D);
+    }
+}
+
+/**
+ * A long to int converter.
+ */
+class L2I implements Converter {
+    /**
+     * {@inheritDoc}
+     */
+    public void codegen(CLEmitter output) {
+        output.addNoArgInstruction(L2I);
+    }
+}
+
+/**
+ * A double to int converter.
+ */
+class D2I implements Converter {
+    /**
+     * {@inheritDoc}
+     */
+    public void codegen(CLEmitter output) {
+        output.addNoArgInstruction(D2I);
+    }
+}
+
+/**
+ * An double to long converter.
+ */
+class D2L implements Converter {
+    /**
+     * {@inheritDoc}
+     */
+    public void codegen(CLEmitter output) {
+        output.addNoArgInstruction(D2L);
     }
 }

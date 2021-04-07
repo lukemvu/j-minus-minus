@@ -16,7 +16,8 @@
 
       - look at JLiteralInt.java
       - study structure, look at codegen
-      -
+      - added converter methods for double and longs
+      - CTRL-F THAT INT
 
       Issues and resolution: ...
 
