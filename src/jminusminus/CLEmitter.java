@@ -1198,6 +1198,7 @@ public class CLEmitter {
         String returnType = descriptor.substring(descriptor.lastIndexOf(")") + 1);
 
         // Units consumed.
+        boolean inArray = false;
         for (int j = 0; j < argTypes.length(); j++) {
             char c = argTypes.charAt(j);
             switch (c) {
@@ -1207,18 +1208,32 @@ public class CLEmitter {
                 case 'F':
                 case 'S':
                 case 'Z':
-                    i -= 1;
+                    if (!inArray) {
+                        i -= 1;
+                    } else {
+                        inArray = false;
+                    }
                     break;
                 case '[':
+                    i -= 1;
+                    inArray = true;
                     break;
                 case 'J':
                 case 'D':
-                    i -= 2;
+                    if (!inArray) {
+                        i -= 2;
+                    } else {
+                        inArray = false;
+                    }
                     break;
                 case 'L':
-                    int k = argTypes.indexOf(";", j);
-                    j = k;
-                    i -= 1;
+                    if (!inArray) {
+                        int k = argTypes.indexOf(";", j);
+                        j = k;
+                        i -= 1;
+                    } else {
+                        inArray = false;
+                    }
                     break;
             }
         }

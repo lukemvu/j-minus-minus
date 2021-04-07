@@ -43,7 +43,8 @@ class JLiteralDouble extends JExpression {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        double d = toDouble();
+        output.addLDCInstruction(d);
     }
 
     /**

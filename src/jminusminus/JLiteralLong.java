@@ -43,7 +43,8 @@ class JLiteralLong extends JExpression {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        long l = toLong();
+        output.addLDCInstruction(l);
     }
 
     /**
