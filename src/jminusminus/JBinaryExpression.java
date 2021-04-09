@@ -77,9 +77,9 @@ class JMultiplyOp extends JBinaryExpression {
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
-        lhs.type().mustMatchExpected(line(), Type.INT);
-        rhs.type().mustMatchExpected(line(), Type.INT);
-        type = Type.INT;
+        lhs.type().mustMatchOneOf(line(), Type.INT, Type.LONG, Type.DOUBLE);
+        rhs.type().mustMatchExpected(line(), lhs.type());
+        type = lhs.type();
         return this;
     }
 
@@ -89,7 +89,13 @@ class JMultiplyOp extends JBinaryExpression {
     public void codegen(CLEmitter output) {
         lhs.codegen(output);
         rhs.codegen(output);
-        output.addNoArgInstruction(IMUL);
+        if (type == Type.INT) {
+            output.addNoArgInstruction(IMUL);
+        } else if (type == Type.LONG) {
+            output.addNoArgInstruction(LMUL);
+        } else if (type == Type.DOUBLE) {
+            output.addNoArgInstruction(DMUL);
+        }
     }
 }
 
@@ -119,6 +125,10 @@ class JPlusOp extends JBinaryExpression {
             return (new JStringConcatenationOp(line, lhs, rhs)).analyze(context);
         } else if (lhs.type() == Type.INT && rhs.type() == Type.INT) {
             type = Type.INT;
+        } else if (lhs.type() == Type.LONG && rhs.type() == Type.LONG) {
+            type = Type.LONG;
+        } else if (lhs.type() == Type.DOUBLE && rhs.type() == Type.DOUBLE) {
+            type = Type.DOUBLE;
         } else {
             type = Type.ANY;
             JAST.compilationUnit.reportSemanticError(line(), "Invalid operand types for +");
@@ -132,7 +142,13 @@ class JPlusOp extends JBinaryExpression {
     public void codegen(CLEmitter output) {
         lhs.codegen(output);
         rhs.codegen(output);
-        output.addNoArgInstruction(IADD);
+        if (type == Type.INT) {
+            output.addNoArgInstruction(IADD);
+        } else if (type == Type.LONG) {
+            output.addNoArgInstruction(LADD);
+        } else if (type == Type.DOUBLE) {
+            output.addNoArgInstruction(DADD);
+        }
     }
 }
 
@@ -157,9 +173,9 @@ class JSubtractOp extends JBinaryExpression {
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
-        lhs.type().mustMatchExpected(line(), Type.INT);
-        rhs.type().mustMatchExpected(line(), Type.INT);
-        type = Type.INT;
+        lhs.type().mustMatchOneOf(line(), Type.INT, Type.LONG, Type.DOUBLE);
+        rhs.type().mustMatchExpected(line(), lhs.type());
+        type = lhs.type();
         return this;
     }
 
@@ -169,7 +185,13 @@ class JSubtractOp extends JBinaryExpression {
     public void codegen(CLEmitter output) {
         lhs.codegen(output);
         rhs.codegen(output);
-        output.addNoArgInstruction(ISUB);
+        if (type == Type.INT) {
+            output.addNoArgInstruction(ISUB);
+        } else if (type == Type.LONG) {
+            output.addNoArgInstruction(LSUB);
+        } else if (type == Type.DOUBLE) {
+            output.addNoArgInstruction(DSUB);
+        }
     }
 }
 
@@ -194,9 +216,9 @@ class JDivideOp extends JBinaryExpression {
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
-        lhs.type().mustMatchExpected(line(), Type.INT);
-        rhs.type().mustMatchExpected(line(), Type.INT);
-        type = Type.INT;
+        lhs.type().mustMatchOneOf(line(), Type.INT, Type.LONG, Type.DOUBLE);
+        rhs.type().mustMatchExpected(line(), lhs.type());
+        type = lhs.type();
         return this;
     }
 
@@ -206,7 +228,13 @@ class JDivideOp extends JBinaryExpression {
     public void codegen(CLEmitter output) {
         lhs.codegen(output);
         rhs.codegen(output);
-        output.addNoArgInstruction(IDIV);
+        if (type == Type.INT) {
+            output.addNoArgInstruction(IDIV);
+        } else if (type == Type.LONG) {
+            output.addNoArgInstruction(LDIV);
+        } else if (type == Type.DOUBLE) {
+            output.addNoArgInstruction(DDIV);
+        }
     }
 }
 
@@ -231,9 +259,9 @@ class JRemainderOp extends JBinaryExpression {
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
-        lhs.type().mustMatchExpected(line(), Type.INT);
-        rhs.type().mustMatchExpected(line(), Type.INT);
-        type = Type.INT;
+        lhs.type().mustMatchOneOf(line(), Type.INT, Type.LONG, Type.DOUBLE);
+        rhs.type().mustMatchExpected(line(), lhs.type());
+        type = lhs.type();
         return this;
     }
 
@@ -243,7 +271,13 @@ class JRemainderOp extends JBinaryExpression {
     public void codegen(CLEmitter output) {
         lhs.codegen(output);
         rhs.codegen(output);
-        output.addNoArgInstruction(IREM);
+        if (type == Type.INT) {
+            output.addNoArgInstruction(IREM);
+        } else if (type == Type.LONG) {
+            output.addNoArgInstruction(LREM);
+        } else if (type == Type.DOUBLE) {
+            output.addNoArgInstruction(DREM);
+        }
     }
 }
 

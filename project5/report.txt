@@ -1,7 +1,7 @@
 1. Enter the number of hours it took you to complete the project between
    the <<< and >>> signs below (eg, <<<10>>>).
 
-   <<< >>>
+   <<<8>>>
    
 2. Enter the difficulty level (1: very easy; 5: very difficult) of the project
    between the <<< and >>> signs below (eg, <<<3>>>).
@@ -12,19 +12,69 @@
    encountered, and how you resolved those issues.
 
    Problem 1 (Long and Double Basic Types)
-      Approach: ...
+      Approach:
 
-      - look at JLiteralInt.java
-      - study structure, look at codegen
-      - added converter methods for double and longs
-      - CTRL-F THAT INT
+      I followed the structure of code in JLiteralInt to build out analyze()
+      and codegen() in JLiteralDouble and JLiteralLong. JLiteralLong required a
+      strip of the ending "L" | "l" character in its toLong() method. In
+      JCastOp I added more conversions to the table to support type conversions
+      and boxing/unboxing of longs and doubles. New methods were added for
+      generating code for the conversions following the structure of I2C.
+      In each of JConstructorDeclaration, JMethodDeclaration, and
+      JVariableDeclaration, I use nextOffset() to skip offsets for longs
+      and doubles after checking for their type. codegen() in JReturnStatement
+      has additional instructions added for returning long and double types.
+      JVariable codegen() and codegenStore() have long and doubles added
+      similarly to INT, replacing instructions with their respective types.
+      Similarly is done for JArrayExpression and JArrayInitializer.
 
-      Issues and resolution: ...
+      Issues and resolution:
+
+      Exception in thread "main" java.lang.VerifyError: (class: BasicTypes,
+      method: fibonacci signature: (I)J) Wrong return type in function
+
+      I initially had partialCodegen() in JMethodDeclaration incorrect; I
+      was calling the IRETURN instruction for LONG and DOUBLE types when it
+      should have been LRETURN and DRETURN respectively.
+
+      Exception in thread "main" java.lang.VerifyError: (class: BasicTypes,
+      method: fibonacci signature: (I)J) Register pair 2/3 contains wrong type
+
+      I had some incorrectly placed offsets; in JVariableDeclaration I was
+      incrementing offset before the LocalVariable was instantiated. This fixed
+      this issue and I got another error with having a integer on stack where
+      it was looking for something else.
+
+      I tested out some of Operators.java test cases and code worked with ints.
+      From office hours the error was from a typo in a store instruction; I was
+      storing an int instead of a long as was required.
 
    Problem 2 (Operators)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      Looking around Type.java I found the mustMatchOneOf() method to allow for
+      multiple types to match. Long and double types were matched to their
+      respective byte code instructions, e.g. LNEG for negating a long and DNEG
+      for negating a double in JNegateOp. I followed the code structure for
+      similar operations to implement analyze() and codegen(), e.g.
+      JPostDecrementOp for JPostIncrementOp. Here the only difference was the
+      byte code instructions for the proper operation.
+
+      JLogicalOrOp was tricky, I spent some time nailing down the logic. I
+      wrote out the pseudo code for it following the structure for
+      JLogicalAndOp from the book and went from there. Branching to target
+      on false only occurs if arg1 is true and short circuits the rhs of the
+      expression.
+
+      Assignment ops were all modeled to JPlusAssignOp: removing the code
+      for string concatenation, passing the respective byte code instruction
+      to the operation, and matching the proper types as specified in the
+      problem description.
+
+      Issues and resolution:
+
+      I had no issues here once the long and double issues were sorted out
+      from problem 1.
 
    Problem 3 (Conditional Expression)
       Approach: ...
@@ -72,7 +122,7 @@
    Name               Status       Help Received
    ----               ------       -------------
 
-   ...                ...          ...
+   J. Michaud           TA          Debugging Problem 1+2
 
 5. List any other comments here. Feel free to provide any feedback on how
    much you learned from doing the assignment, and whether you enjoyed

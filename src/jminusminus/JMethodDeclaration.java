@@ -141,11 +141,12 @@ class JMethodDeclaration extends JAST implements JMember {
         // Declare the parameters. We consider a formal parameter to be always initialized, via a
         // method call.
         for (JFormalParameter param : params) {
+            LocalVariableDefn defn = new LocalVariableDefn(param.type(), this.context.nextOffset());
             // Skip an offset for longs and doubles
             if (param.type() == Type.DOUBLE || param.type() == Type.LONG) {
                 this.context.nextOffset();
             }
-            LocalVariableDefn defn = new LocalVariableDefn(param.type(), this.context.nextOffset());
+
             defn.initialize();
             this.context.addEntry(param.line(), param.name(), defn);
         }
@@ -168,10 +169,15 @@ class JMethodDeclaration extends JAST implements JMember {
         if (returnType == Type.VOID) {
             partial.addNoArgInstruction(RETURN);
         } else if (returnType == Type.INT || returnType == Type.BOOLEAN ||
-                returnType == Type.CHAR || returnType == Type.LONG ||
-                returnType == Type.DOUBLE) {
+                returnType == Type.CHAR) {
             partial.addNoArgInstruction(ICONST_0);
             partial.addNoArgInstruction(IRETURN);
+        } else if (returnType == Type.LONG) {
+            partial.addNoArgInstruction(LCONST_0);
+            partial.addNoArgInstruction(LRETURN);
+        } else if (returnType == Type.DOUBLE) {
+            partial.addNoArgInstruction(LCONST_0);
+            partial.addNoArgInstruction(DRETURN);
         } else {
             partial.addNoArgInstruction(ACONST_NULL);
             partial.addNoArgInstruction(ARETURN);

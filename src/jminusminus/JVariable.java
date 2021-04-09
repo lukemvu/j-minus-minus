@@ -276,7 +276,7 @@ class JVariable extends JExpression implements JLhs {
                             output.addNoArgInstruction(LSTORE_3);
                             break;
                         default:
-                            output.addOneArgInstruction(ISTORE, offset);
+                            output.addOneArgInstruction(LSTORE, offset);
                             break;
                     }
                 } else if (type == Type.DOUBLE) {

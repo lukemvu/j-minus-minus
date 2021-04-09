@@ -28,7 +28,8 @@ class JLiteralLong extends JExpression {
      * @return the literal as a long.
      */
     public long toLong() {
-        return Long.parseLong(text);
+        // Drop the last character "L" | "l"
+        return Long.parseLong(text.substring(0,text.length()-1));
     }
 
     /**
@@ -44,7 +45,13 @@ class JLiteralLong extends JExpression {
      */
     public void codegen(CLEmitter output) {
         long l = toLong();
-        output.addLDCInstruction(l);
+        if (l == 0L || l == 0l) {
+            output.addNoArgInstruction(LCONST_0);
+        } else if (l == 1L || l == 1l) {
+            output.addNoArgInstruction(LCONST_1);
+        } else {
+            output.addLDCInstruction(l);
+        }
     }
 
     /**

@@ -26,7 +26,7 @@ abstract class JComparisonExpression extends JBooleanBinaryExpression {
     public JExpression analyze(Context context) {
         lhs = (JExpression) lhs.analyze(context);
         rhs = (JExpression) rhs.analyze(context);
-        lhs.type().mustMatchExpected(line(), Type.INT);
+        lhs.type().mustMatchOneOf(line(), Type.INT, Type.LONG, Type.DOUBLE);
         rhs.type().mustMatchExpected(line(), lhs.type());
         type = Type.BOOLEAN;
         return this;
@@ -104,7 +104,9 @@ class JGreaterEqualOp extends JComparisonExpression {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
-        // TODO
+        lhs.codegen(output);
+        rhs.codegen(output);
+        output.addBranchInstruction(onTrue ? IF_ICMPGE : IF_ICMPLT, targetLabel);
     }
 }
 
@@ -127,6 +129,8 @@ class JLessThanOp extends JComparisonExpression {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output, String targetLabel, boolean onTrue) {
-        // TODO
+        lhs.codegen(output);
+        rhs.codegen(output);
+        output.addBranchInstruction(onTrue ? IF_ICMPLT : IF_ICMPGE, targetLabel);
     }
 }
