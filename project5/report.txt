@@ -77,9 +77,17 @@
       from problem 1.
 
    Problem 3 (Conditional Expression)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      I followed the structure of JIfStatement.java to build out
+      JConditionalExpression.java, seeing as their logic was fairly similar.
+      Checking for nulls of the elsePart were dropped on both analysis and
+      codegen sides as if JConditionalExpression is called, we already know
+      that the statement will contain a conditional expression.
+
+      Issues and resolution:
+
+      I had no issues here.
 
    Problem 4 (Do Statement)
       Approach: ...
