@@ -32,6 +32,10 @@ public class JDoStatement extends JStatement {
      */
     public JStatement analyze(Context context) {
         // TODO
+        body = (JStatement) body.analyze(context);
+        condition = (JExpression) condition.analyze(context);
+        condition.type().mustMatchExpected(line(), Type.BOOLEAN);
+
         return this;
     }
 
@@ -39,7 +43,10 @@ public class JDoStatement extends JStatement {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        String bodyLabel = output.createLabel();
+        output.addLabel(bodyLabel);
+        body.codegen(output);
+        condition.codegen(output, bodyLabel, true);
     }
 
     /**

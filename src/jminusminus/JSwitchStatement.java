@@ -3,6 +3,7 @@
 package jminusminus;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 import static jminusminus.CLConstants.*;
 
@@ -15,6 +16,13 @@ public class JSwitchStatement extends JStatement {
 
     // List of switch-statement groups.
     private ArrayList<SwitchStatementGroup> stmtGroup;
+
+    // extra stuff
+    private LocalContext context;
+
+    private int hi, lo, nLabels;
+    private ArrayList<String> labels;
+    private TreeMap<Integer, String> matchLabelPairs;
 
     /**
      * Constructs an AST node for a switch-statement.
@@ -34,7 +42,46 @@ public class JSwitchStatement extends JStatement {
      * {@inheritDoc}
      */
     public JStatement analyze(Context context) {
-        // TODO
+        // Deciding switch instruction
+        hi = Integer.MIN_VALUE;
+        lo = Integer.MAX_VALUE;
+        nLabels = 0;
+        labels = new ArrayList<String>();
+        matchLabelPairs = new TreeMap<Integer, String>();
+
+        // Analyzing the condition to ensure it is an integer.
+        condition = (JExpression) condition.analyze(context);
+        condition.type().mustMatchExpected(line(), Type.INT);
+
+        // Analyzing the case expressions and making sure they are integer literals.
+        for (SwitchStatementGroup swtchBlkStmtGroup : stmtGroup) {
+            //JExpression switchLabel : swtchBlkStmtGroup.getSwitchLabels()
+            for (int i = 0; i<swtchBlkStmtGroup.getSwitchLabels().size(); i++) {
+                JExpression switchLabel = swtchBlkStmtGroup.getSwitchLabels().get(i);
+                if (switchLabel instanceof JLiteralInt) {
+                    swtchBlkStmtGroup.getSwitchLabels().set(
+                            i, (JExpression) switchLabel.analyze(context)
+                    );
+                    int val = ((JLiteralInt) switchLabel).toInt();
+                    if (val > hi) hi = val;
+                    if (val < lo) lo = val;
+                    nLabels++;
+                    String labelName = "Case" + val;
+                    labels.add(labelName);
+                    matchLabelPairs.put(val, labelName);
+                }
+            }
+        }
+
+        // Analyzing statements in each case group in the new context.
+        for (SwitchStatementGroup swtchBlkStmtGroup : stmtGroup) {
+            this.context = new LocalContext(context);
+            for (int i = 0; i < swtchBlkStmtGroup.getBlock().size(); i++) {
+                swtchBlkStmtGroup.getBlock().set(
+                        i, (JStatement) swtchBlkStmtGroup.getBlock().get(i).analyze(this.context)
+                );
+            }
+        }
         return this;
     }
 
@@ -42,7 +89,38 @@ public class JSwitchStatement extends JStatement {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        output.addNoArgInstruction(ILOAD_1);
+
+        // Deciding switch instruction
+        long tableSpaceCost = 5 + hi - lo;
+        long tableTimeCost = 3;
+        long lookupSpaceCost = 3 + 2 * nLabels;
+        long lookupTimeCost = nLabels;
+        int opcode = nLabels > 0 && (tableSpaceCost + 3 * tableTimeCost
+                <= lookupSpaceCost + 3 * lookupTimeCost) ? TABLESWITCH : LOOKUPSWITCH;
+
+        if (opcode == TABLESWITCH) {
+            output.addTABLESWITCHInstruction("Default", lo, hi, labels);
+        } else {
+            output.addLOOKUPSWITCHInstruction("Default", nLabels, matchLabelPairs);
+        }
+
+        for (SwitchStatementGroup swtchBlkStmtGroup : stmtGroup) {
+            for (JExpression switchLabel : swtchBlkStmtGroup.getSwitchLabels()) {
+                // Adding case labels
+                if (switchLabel != null) {
+                    int val = ((JLiteralInt) switchLabel).toInt();
+                    output.addLabel("Case" + val);
+                } else {
+                    output.addLabel("Default");
+                }
+            }
+            for (JStatement statement : swtchBlkStmtGroup.getBlock()) {
+                // Generating code per statement
+                statement.codegen(output);
+            }
+        }
+        output.addLabel("EndSwitch");
     }
 
     /**
@@ -79,6 +157,14 @@ class SwitchStatementGroup {
     public SwitchStatementGroup(ArrayList<JExpression> switchLabels, ArrayList<JStatement> block) {
         this.switchLabels = switchLabels;
         this.block = block;
+    }
+
+    public ArrayList<JExpression> getSwitchLabels() {
+        return switchLabels;
+    }
+
+    public ArrayList<JStatement> getBlock() {
+        return block;
     }
 
     /**

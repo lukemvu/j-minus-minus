@@ -89,27 +89,43 @@
 
       I had no issues here.
 
-   Problem 4 (Do Statement)
+   Problem 4 (Switch Statement)
+      Approach:
+
+      From GenTableSwitch.java and GenLookupSwitch.java I figured that I needed
+      to add one of the switch bytecode instructions, add case labels, and
+      generate code for the block of statements. Additional getters were added
+      to SwitchStatementGroup to access the private fields (switchLabels and
+      block). JBlock.java's analyze() gave me hints as to how to analyze the
+      individual case labels and statements. I also decided to calculate the
+      hi, lo, and nLabel values for determining which switch instruction to
+      use during the analysis phase as well as building out lists of labels
+      for both possible switch instructions.
+
+      Issues and resolution:
+
+      I ran into some issues with finding a way to access the expression
+      portion of the switch labels; Piazza came in with casting the JExpression
+      to a JLiteralInt, allowing me to use the toInt() method to get the case
+      value. Piazza also helped with a method to check if the switchLabel was
+      indeed a JLiteralInt, using instanceof as a check.
+
+   Problem 5 (Do Statement)
       Approach: ...
 
       Issues and resolution: ...
 
-   Problem 5 (For Statement)
+   Problem 6 (For Statement)
       Approach: ...
 
       Issues and resolution: ...
 
-   Problem 6 (Break Statement)
+   Problem 7 (Break Statement)
       Approach: ...
 
       Issues and resolution: ...
 
-   Problem 7 (Continue Statement)
-      Approach: ...
-
-      Issues and resolution: ...
-
-   Problem 8 (Switch Statement)
+   Problem 8 (Continue Statement)
       Approach: ...
 
       Issues and resolution: ...
