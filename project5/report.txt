@@ -1,7 +1,7 @@
 1. Enter the number of hours it took you to complete the project between
    the <<< and >>> signs below (eg, <<<10>>>).
 
-   <<<8>>>
+   <<<16>>>
    
 2. Enter the difficulty level (1: very easy; 5: very difficult) of the project
    between the <<< and >>> signs below (eg, <<<3>>>).
@@ -110,15 +110,37 @@
       value. Piazza also helped with a method to check if the switchLabel was
       indeed a JLiteralInt, using instanceof as a check.
 
-   Problem 5 (Do Statement)
-      Approach: ...
+      - TBD
 
-      Issues and resolution: ...
+   Problem 5 (Do Statement)
+      Approach:
+
+      Codegen() for a Do statement is trivial; I add a label to the start of
+      the statement. From there those instructions are executed. I use the
+      codegen method for short-circuit code generation on a boolean expression
+      to decide whether to jump to that initial label if the condition holds
+      true.
+
+      Issues and resolution:
+
+      I had no issues here.
 
    Problem 6 (For Statement)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      I followed the structure of JBlock's analyze() to create a new
+      LocalContext as well as analyze the individual JStatements of the init
+      and update lists for JForStatement. Structure for codgen() is as follows:
+      I start with generating code for the initialization statements. Next,
+      the label bodyLabel marks the start of the loop of instructions. The
+      condition is checked; if false goes to a label at the end of all the for
+      statement instructions. Code is generated for the body of the for
+      statement and update statements. A branch instruction jumps to the
+      condition check.
+
+      Issues and resolution:
+
+      I had no issues in logic after some typos were debugged.
 
    Problem 7 (Break Statement)
       Approach: ...
@@ -147,6 +169,7 @@
    ----               ------       -------------
 
    J. Michaud           TA          Debugging Problem 1+2
+   N. Suchecki          Student     Suggestion for casting switchLabel
 
 5. List any other comments here. Feel free to provide any feedback on how
    much you learned from doing the assignment, and whether you enjoyed
