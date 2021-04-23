@@ -3,6 +3,7 @@
 package jminusminus;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.TreeMap;
 
 import static jminusminus.CLConstants.*;
@@ -28,6 +29,9 @@ public class JSwitchStatement extends JStatement {
     // Break statement.
     public boolean hasBreak;
     public String breakLabel;
+
+    // Default statement.
+    private boolean hasDefault;
 
     /**
      * Constructs an AST node for a switch-statement.
@@ -55,13 +59,6 @@ public class JSwitchStatement extends JStatement {
         condition = (JExpression) condition.analyze(context);
         condition.type().mustMatchExpected(line(), Type.INT);
 
-        // Switch instruction decision
-        hi = Integer.MIN_VALUE;
-        lo = Integer.MAX_VALUE;
-        nLabels = 0;
-        labels = new ArrayList<String>();
-        matchLabelPairs = new TreeMap<Integer, String>();
-
         // Analyzing the case expressions and making sure they are integer literals.
         for (SwitchStatementGroup swtchBlkStmtGroup : stmtGroup) {
             for (int i = 0; i<swtchBlkStmtGroup.getSwitchLabels().size(); i++) {
@@ -70,17 +67,8 @@ public class JSwitchStatement extends JStatement {
                     swtchBlkStmtGroup.getSwitchLabels().set(
                             i, (JExpression) switchLabel.analyze(context)
                     );
-
-                    // Switch instruction decision
-                    int val = ((JLiteralInt) switchLabel).toInt();
-                    if (val > hi) hi = val;
-                    if (val < lo) lo = val;
-                    nLabels++;
-
-                    // Building lists for switch labels
-                    String labelName = "Case" + val;
-                    labels.add(labelName);
-                    matchLabelPairs.put(val, labelName);
+                } else if (switchLabel != null) {
+                    JAST.compilationUnit.reportSemanticError(line(), "switchLabel required to be an integer literal");
                 }
             }
         }
@@ -97,7 +85,6 @@ public class JSwitchStatement extends JStatement {
 
         // Pop self-reference to track surrounding control-flow
         JMember.enclosingStatement.pop();
-
         return this;
     }
 
@@ -106,9 +93,34 @@ public class JSwitchStatement extends JStatement {
      */
     public void codegen(CLEmitter output) {
         condition.codegen(output);
-
         if (hasBreak) {
             breakLabel = output.createLabel();
+        }
+        String defaultLabel = output.createLabel();
+
+        // Switch instruction decision
+        hi = Integer.MIN_VALUE;
+        lo = Integer.MAX_VALUE;
+        nLabels = 0;
+        labels = new ArrayList<String>();
+        matchLabelPairs = new TreeMap<Integer, String>();
+
+        // Building label lists/map and calculating hi lo.
+        for (SwitchStatementGroup swtchBlkStmtGroup : stmtGroup) {
+            for (int i = 0; i < swtchBlkStmtGroup.getSwitchLabels().size(); i++) {
+                JExpression switchLabel = swtchBlkStmtGroup.getSwitchLabels().get(i);
+                if (switchLabel != null) {
+                    int val = ((JLiteralInt) switchLabel).toInt();
+                    if (val > hi) hi = val;
+                    if (val < lo) lo = val;
+                    nLabels++;
+                    String label = output.createLabel();
+                    labels.add(label);
+                    matchLabelPairs.put(val, label);
+                } else {
+                    hasDefault = true;
+                }
+            }
         }
 
         // Deciding switch instruction
@@ -116,31 +128,31 @@ public class JSwitchStatement extends JStatement {
         long tableTimeCost = 3;
         long lookupSpaceCost = 3 + 2 * nLabels;
         long lookupTimeCost = nLabels;
-        int opcode = nLabels > 0 && (tableSpaceCost + 3 * tableTimeCost
-                <= lookupSpaceCost + 3 * lookupTimeCost) ? TABLESWITCH : LOOKUPSWITCH;
-
-        // Codegen() the correct switch instruction
+        int opcode = nLabels > 0 && (tableSpaceCost + 3 * tableTimeCost <= lookupSpaceCost + 3 * lookupTimeCost) ? TABLESWITCH : LOOKUPSWITCH;
         if (opcode == TABLESWITCH) {
-            output.addTABLESWITCHInstruction("Default", lo, hi, labels);
+            output.addTABLESWITCHInstruction(defaultLabel, lo, hi, labels);
         } else {
-            output.addLOOKUPSWITCHInstruction("Default", nLabels, matchLabelPairs);
+            output.addLOOKUPSWITCHInstruction(defaultLabel, nLabels, matchLabelPairs);
         }
 
+        Iterator<String> labelsIterator = labels.iterator();
+
         for (SwitchStatementGroup swtchBlkStmtGroup : stmtGroup) {
-            for (JExpression switchLabel : swtchBlkStmtGroup.getSwitchLabels()) {
-                // Adding case labels
+            for (int i = 0; i < swtchBlkStmtGroup.getSwitchLabels().size(); i++) {
+                JExpression switchLabel = swtchBlkStmtGroup.getSwitchLabels().get(i);
                 if (switchLabel != null) {
-                    int val = ((JLiteralInt) switchLabel).toInt();
-                    output.addLabel("Case" + val);
+                    output.addLabel(labelsIterator.next());
                 } else {
-                    // Possible issue if there is no default, may need to fix
-                    output.addLabel("Default");
+                    output.addLabel(defaultLabel);
                 }
             }
             for (JStatement statement : swtchBlkStmtGroup.getBlock()) {
                 // Generating code per statement
                 statement.codegen(output);
             }
+        }
+        if (!hasDefault) {
+            output.addLabel(defaultLabel);
         }
         if (hasBreak) {
             output.addLabel(breakLabel);

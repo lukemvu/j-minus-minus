@@ -6,7 +6,7 @@
 2. Enter the difficulty level (1: very easy; 5: very difficult) of the project
    between the <<< and >>> signs below (eg, <<<3>>>).
 
-   <<< >>>
+   <<<5>>>
 
 3. Provide a short description of how you approached each problem, issues you 
    encountered, and how you resolved those issues.
@@ -133,7 +133,28 @@
       value. Piazza also helped with a method to check if the switchLabel was
       indeed a JLiteralInt, using instanceof as a check.
 
-      - TBD
+      I was originally hard coding the ILOAD instruction and not generating it
+      from condition.codgegen(output) which fixed discrepancies between
+      the correct decompiled class file and j--'s generated one.
+
+      I had another issue with the first case labels pointing to the same
+      instruction to jump to; this was caused by an issue with the hard coded
+      labels I was building and adding. (labels.add("Case" + val)) I did a
+      major rewrite of the analyze() and codegen(), moving the label creation
+      into codegen() and creating unique labels using output.createLabel().
+      I used an iterator to track on label addition in the code generation
+      between the different switch labels and switch block statement groups.
+      This way, unique labels were generated and placed into the correct
+      locations in codegen().
+
+      This fixed issues I had with case labels pointing to the incorrect
+      instruction but I still had issues with the default label. Cases where
+      the Java code with the switch statement has no explicit "Default" case,
+      codegen() still needed to add a defaultLabel. This issue was fixed by
+      adding another instance variable hasDefault, and having codegen() add
+      the defaultLabel at the end of the switch statement instructions if it
+      had not yet been added (If hasDefault was true, a default label would
+      have added it where appropriate earlier in the code.)
 
    Problem 5 (Do Statement)
       Approach:
@@ -166,31 +187,38 @@
       I had no issues in logic after some typos were debugged.
 
    Problem 7 (Break Statement)
-      Approach: ...
+      Approach:
 
       Issues and resolution:
-    - Exception in thread "main" java.util.EmptyStackException
+
+      I had some issues writing a getter method to access the hasBreak and
+      breakLabel fields from from the control-flow statements and ended up just
+      declaring public instance variables and accessing them that way.
+
+      Exception in thread "main" java.util.EmptyStackException
               at java.base/java.util.Stack.peek(Stack.java:102)
               at jminusminus.JBreakStatement.codegen(JBreakStatement.java:44)
-      - error with trying to peek() empty stack, traced back to trying to peek
-      from within codegen--which is incorrect.
-      -Error: Unable to initialize main class SwitchStatement
-       Caused by: java.lang.VerifyError: (class: SwitchStatement, method: main signature: ([Ljava/lang/String;)V) Register 1 contains wrong type
-        - error with default statement noticed in decompiled class file
-        - setting wrong goto label
-        - tried to fix with naming default label
-        - main([Ljava/lang/String;)V: Unable to resolve jump label(s)
-        - was hard coding condition and not using codegen, fixed that issue with
-        incorrect iload instruction before the switch instruction
-        -null pointer exception in analysis in jforstatement
-        - needed to handle cases where fields were null in analyze and codegen
-        -pog champ it works
 
+      Here I was trying to peek() from within codegen(); the logic was
+      incorrect here and was fixed by dropping that peek() and just accessing
+      enclosingStatement where I needed.
+
+      I had got a null pointer exception from within JForStatement.java.
+      I realized I was not handling cases where there were null fields
+      in both analyze and codegen(). Checks were added before analysis and
+      code generation.
 
    Problem 8 (Continue Statement)
-      Approach: ...
+      Approach:
 
-      Issues and resolution: ...
+      JContinueStatement.java was very similar in structure to how break
+      statements flowed. Modifications were made where instructions needed to
+      jump to when a continue is executed, e.g. in a for loop, continue
+      would jump to code responsible for update.
+
+      Issues and resolution:
+
+      I had no issues here.
 
    Problem 9 (Exception Handlers)
       Approach: ...
@@ -210,9 +238,11 @@
 
    J. Michaud           TA          Debugging Problem 1+2
    N. Suchecki          Student     Suggestion for casting switchLabel
+   J. Rodzik            Student     Suggestion for not hard coding labels
+                                    & default requirement
 
 5. List any other comments here. Feel free to provide any feedback on how
    much you learned from doing the assignment, and whether you enjoyed
    doing it.
 
-   ...
+   This was a very pogchamp project.
