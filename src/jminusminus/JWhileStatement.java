@@ -18,6 +18,10 @@ class JWhileStatement extends JStatement {
     public boolean hasBreak;
     public String breakLabel;
 
+    // Continue statement.
+    public boolean hasContinue;
+    public String continueLabel;
+
     /**
      * Constructs an AST node for a while-statement.
      *
@@ -47,19 +51,22 @@ class JWhileStatement extends JStatement {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-
         if (hasBreak) {
             breakLabel = output.createLabel();
         }
-
+        if (hasContinue) {
+            continueLabel = output.createLabel();
+        }
         String test = output.createLabel();
         String out = output.createLabel();
+        if (hasContinue) {
+            output.addLabel(continueLabel);
+        }
         output.addLabel(test);
         condition.codegen(output, out, false);
         body.codegen(output);
         output.addBranchInstruction(GOTO, test);
         output.addLabel(out);
-
         if (hasBreak) {
             output.addLabel(breakLabel);
         }

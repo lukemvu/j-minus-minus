@@ -29,6 +29,10 @@ class JForStatement extends JStatement {
     public boolean hasBreak;
     public String breakLabel;
 
+    // Continue statement.
+    public boolean hasContinue;
+    public String continueLabel;
+
     /**
      * Constructs an AST node for a for-statement.
      *
@@ -92,6 +96,9 @@ class JForStatement extends JStatement {
         if (hasBreak) {
             breakLabel = output.createLabel();
         }
+        if (hasContinue) {
+            continueLabel = output.createLabel();
+        }
         String bodyLabel = output.createLabel();
         String endLabel = output.createLabel();
         if (init != null) {
@@ -104,6 +111,9 @@ class JForStatement extends JStatement {
             condition.codegen(output, endLabel, false);
         }
         body.codegen(output);
+        if (hasContinue) {
+            output.addLabel(continueLabel);
+        }
         if (update != null) {
             for (JStatement statement : update) {
                 statement.codegen(output);

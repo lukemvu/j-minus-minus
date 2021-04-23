@@ -8,6 +8,8 @@ import static jminusminus.CLConstants.GOTO;
  * An AST node for a continue-statement.
  */
 public class JContinueStatement extends JStatement {
+    // enclosingStatement
+    private JStatement enclosingStatement;
     /**
      * Constructs an AST node for a continue-statement.
      *
@@ -21,7 +23,14 @@ public class JContinueStatement extends JStatement {
      * {@inheritDoc}
      */
     public JStatement analyze(Context context) {
-        // TODO
+        enclosingStatement = JMember.enclosingStatement.peek();
+        if (enclosingStatement instanceof JDoStatement) {
+            ((JDoStatement) enclosingStatement).hasContinue = true;
+        } else if (enclosingStatement instanceof JWhileStatement) {
+            ((JWhileStatement) enclosingStatement).hasContinue = true;
+        } else if (enclosingStatement instanceof JForStatement) {
+            ((JForStatement) enclosingStatement).hasContinue = true;
+        }
         return this;
     }
 
@@ -29,7 +38,13 @@ public class JContinueStatement extends JStatement {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        if (enclosingStatement instanceof JDoStatement) {
+            output.addBranchInstruction(GOTO, ((JDoStatement) enclosingStatement).continueLabel);
+        } else if (enclosingStatement instanceof JWhileStatement) {
+            output.addBranchInstruction(GOTO, ((JWhileStatement) enclosingStatement).continueLabel);
+        } else if (enclosingStatement instanceof JForStatement) {
+            output.addBranchInstruction(GOTO, ((JForStatement) enclosingStatement).continueLabel);
+        }
     }
 
     /**

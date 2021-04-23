@@ -20,6 +20,10 @@ public class JDoStatement extends JStatement {
     public boolean hasBreak;
     public String breakLabel;
 
+    // Continue statement.
+    public boolean hasContinue;
+    public String continueLabel;
+
     /**
      * Constructs an AST node for a do-statement.
      *
@@ -52,7 +56,13 @@ public class JDoStatement extends JStatement {
         if (hasBreak) {
             breakLabel = output.createLabel();
         }
+        if (hasContinue) {
+            continueLabel = output.createLabel();
+        }
         String bodyLabel = output.createLabel();
+        if (hasContinue) {
+            output.addLabel(continueLabel);
+        }
         output.addLabel(bodyLabel);
         body.codegen(output);
         condition.codegen(output, bodyLabel, true);
