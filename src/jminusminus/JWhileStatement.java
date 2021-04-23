@@ -14,6 +14,10 @@ class JWhileStatement extends JStatement {
     // Body.
     private JStatement body;
 
+    // Break statement.
+    public boolean hasBreak;
+    public String breakLabel;
+
     /**
      * Constructs an AST node for a while-statement.
      *
@@ -31,9 +35,11 @@ class JWhileStatement extends JStatement {
      * {@inheritDoc}
      */
     public JWhileStatement analyze(Context context) {
+        JMember.enclosingStatement.push(this);
         condition = condition.analyze(context);
         condition.type().mustMatchExpected(line(), Type.BOOLEAN);
         body = (JStatement) body.analyze(context);
+        JMember.enclosingStatement.pop();
         return this;
     }
 
@@ -41,6 +47,11 @@ class JWhileStatement extends JStatement {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
+
+        if (hasBreak) {
+            breakLabel = output.createLabel();
+        }
+
         String test = output.createLabel();
         String out = output.createLabel();
         output.addLabel(test);
@@ -48,6 +59,10 @@ class JWhileStatement extends JStatement {
         body.codegen(output);
         output.addBranchInstruction(GOTO, test);
         output.addLabel(out);
+
+        if (hasBreak) {
+            output.addLabel(breakLabel);
+        }
     }
 
     /**

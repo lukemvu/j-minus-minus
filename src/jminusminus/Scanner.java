@@ -398,7 +398,7 @@ class Scanner {
                     buffer.append(ch);
                     nextCh();
                     return new TokenInfo(LONG_LITERAL, buffer.toString(), line);
-                // <DOUBLE_LITERAL>
+                    // <DOUBLE_LITERAL>
                 } else if (ch == '.' || ch == 'e' || ch == 'E' || ch == 'd'|| ch == 'D') {
                     if (ch == '.') {
                         buffer.append(ch);

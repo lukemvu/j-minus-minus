@@ -25,6 +25,10 @@ class JForStatement extends JStatement {
     // Local Context
     private LocalContext context;
 
+    // Break statement.
+    public boolean hasBreak;
+    public String breakLabel;
+
     /**
      * Constructs an AST node for a for-statement.
      *
@@ -47,25 +51,36 @@ class JForStatement extends JStatement {
      * {@inheritDoc}
      */
     public JForStatement analyze(Context context) {
+
+        JMember.enclosingStatement.push(this);
+
         // Create new LocalContext with context as the parent
         this.context = new LocalContext(context);
 
         // Analyze the init in the new context
-        for (int i = 0; i < init.size(); i++) {
-            init.set(i, (JStatement) init.get(i).analyze(this.context));
+        if (init != null) {
+            for (int i = 0; i < init.size(); i++) {
+                init.set(i, (JStatement) init.get(i).analyze(this.context));
+            }
         }
 
         // Analyze the condition in the new context and type check for boolean
-        condition = (JExpression) condition.analyze(this.context);
-        condition.type().mustMatchExpected(line(), Type.BOOLEAN);
+        if (condition != null) {
+            condition = (JExpression) condition.analyze(this.context);
+            condition.type().mustMatchExpected(line(), Type.BOOLEAN);
+        }
 
         // Analyze the update in the new context
-        for (int i = 0; i < update.size(); i++) {
-            update.set(i, (JStatement) update.get(i).analyze(this.context));
+        if (update != null) {
+            for (int i = 0; i < update.size(); i++) {
+                update.set(i, (JStatement) update.get(i).analyze(this.context));
+            }
         }
 
         // Analyze body in the new context
         body = (JStatement) body.analyze(this.context);
+
+        JMember.enclosingStatement.pop();
 
         return this;
     }
@@ -74,19 +89,31 @@ class JForStatement extends JStatement {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
+        if (hasBreak) {
+            breakLabel = output.createLabel();
+        }
         String bodyLabel = output.createLabel();
         String endLabel = output.createLabel();
-        for (JStatement statement : init) {
-            statement.codegen(output);
+        if (init != null) {
+            for (JStatement statement : init) {
+                statement.codegen(output);
+            }
         }
         output.addLabel(bodyLabel);
-        condition.codegen(output, endLabel, false);
+        if (condition != null) {
+            condition.codegen(output, endLabel, false);
+        }
         body.codegen(output);
-        for (JStatement statement : update) {
-            statement.codegen(output);
+        if (update != null) {
+            for (JStatement statement : update) {
+                statement.codegen(output);
+            }
         }
         output.addBranchInstruction(GOTO, bodyLabel);
         output.addLabel(endLabel);
+        if (hasBreak) {
+            output.addLabel(breakLabel);
+        }
     }
 
     /**

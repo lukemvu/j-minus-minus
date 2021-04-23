@@ -17,12 +17,17 @@ public class JSwitchStatement extends JStatement {
     // List of switch-statement groups.
     private ArrayList<SwitchStatementGroup> stmtGroup;
 
-    // extra stuff
+    // LocalContext
     private LocalContext context;
 
+    // Switch instruction decision.
     private int hi, lo, nLabels;
     private ArrayList<String> labels;
     private TreeMap<Integer, String> matchLabelPairs;
+
+    // Break statement.
+    public boolean hasBreak;
+    public String breakLabel;
 
     /**
      * Constructs an AST node for a switch-statement.
@@ -42,30 +47,37 @@ public class JSwitchStatement extends JStatement {
      * {@inheritDoc}
      */
     public JStatement analyze(Context context) {
-        // Deciding switch instruction
+
+        // Push self-reference to track surrounding control-flow
+        JMember.enclosingStatement.push(this);
+
+        // Analyzing the condition to ensure it is an integer.
+        condition = (JExpression) condition.analyze(context);
+        condition.type().mustMatchExpected(line(), Type.INT);
+
+        // Switch instruction decision
         hi = Integer.MIN_VALUE;
         lo = Integer.MAX_VALUE;
         nLabels = 0;
         labels = new ArrayList<String>();
         matchLabelPairs = new TreeMap<Integer, String>();
 
-        // Analyzing the condition to ensure it is an integer.
-        condition = (JExpression) condition.analyze(context);
-        condition.type().mustMatchExpected(line(), Type.INT);
-
         // Analyzing the case expressions and making sure they are integer literals.
         for (SwitchStatementGroup swtchBlkStmtGroup : stmtGroup) {
-            //JExpression switchLabel : swtchBlkStmtGroup.getSwitchLabels()
             for (int i = 0; i<swtchBlkStmtGroup.getSwitchLabels().size(); i++) {
                 JExpression switchLabel = swtchBlkStmtGroup.getSwitchLabels().get(i);
                 if (switchLabel instanceof JLiteralInt) {
                     swtchBlkStmtGroup.getSwitchLabels().set(
                             i, (JExpression) switchLabel.analyze(context)
                     );
+
+                    // Switch instruction decision
                     int val = ((JLiteralInt) switchLabel).toInt();
                     if (val > hi) hi = val;
                     if (val < lo) lo = val;
                     nLabels++;
+
+                    // Building lists for switch labels
                     String labelName = "Case" + val;
                     labels.add(labelName);
                     matchLabelPairs.put(val, labelName);
@@ -82,6 +94,10 @@ public class JSwitchStatement extends JStatement {
                 );
             }
         }
+
+        // Pop self-reference to track surrounding control-flow
+        JMember.enclosingStatement.pop();
+
         return this;
     }
 
@@ -89,7 +105,11 @@ public class JSwitchStatement extends JStatement {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        output.addNoArgInstruction(ILOAD_1);
+        condition.codegen(output);
+
+        if (hasBreak) {
+            breakLabel = output.createLabel();
+        }
 
         // Deciding switch instruction
         long tableSpaceCost = 5 + hi - lo;
@@ -99,6 +119,7 @@ public class JSwitchStatement extends JStatement {
         int opcode = nLabels > 0 && (tableSpaceCost + 3 * tableTimeCost
                 <= lookupSpaceCost + 3 * lookupTimeCost) ? TABLESWITCH : LOOKUPSWITCH;
 
+        // Codegen() the correct switch instruction
         if (opcode == TABLESWITCH) {
             output.addTABLESWITCHInstruction("Default", lo, hi, labels);
         } else {
@@ -112,6 +133,7 @@ public class JSwitchStatement extends JStatement {
                     int val = ((JLiteralInt) switchLabel).toInt();
                     output.addLabel("Case" + val);
                 } else {
+                    // Possible issue if there is no default, may need to fix
                     output.addLabel("Default");
                 }
             }
@@ -120,7 +142,9 @@ public class JSwitchStatement extends JStatement {
                 statement.codegen(output);
             }
         }
-        output.addLabel("EndSwitch");
+        if (hasBreak) {
+            output.addLabel(breakLabel);
+        }
     }
 
     /**

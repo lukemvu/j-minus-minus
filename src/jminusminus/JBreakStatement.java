@@ -8,6 +8,9 @@ import static jminusminus.CLConstants.*;
  * An AST node for a break-statement.
  */
 public class JBreakStatement extends JStatement {
+    // enclosingStatement
+    private JStatement enclosingStatement;
+
     /**
      * Constructs an AST node for a break-statement.
      *
@@ -21,7 +24,16 @@ public class JBreakStatement extends JStatement {
      * {@inheritDoc}
      */
     public JStatement analyze(Context context) {
-        // TODO
+        enclosingStatement = JMember.enclosingStatement.peek();
+        if (enclosingStatement instanceof JDoStatement) {
+            ((JDoStatement) enclosingStatement).hasBreak = true;
+        } else if (enclosingStatement instanceof JWhileStatement) {
+            ((JWhileStatement) enclosingStatement).hasBreak = true;
+        } else if (enclosingStatement instanceof JSwitchStatement) {
+            ((JSwitchStatement) enclosingStatement).hasBreak = true;
+        } else if (enclosingStatement instanceof JForStatement) {
+            ((JForStatement) enclosingStatement).hasBreak = true;
+        }
         return this;
     }
 
@@ -29,7 +41,15 @@ public class JBreakStatement extends JStatement {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
-        // TODO
+        if (enclosingStatement instanceof JDoStatement) {
+            output.addBranchInstruction(GOTO, ((JDoStatement) enclosingStatement).breakLabel);
+        } else if (enclosingStatement instanceof JWhileStatement) {
+            output.addBranchInstruction(GOTO, ((JWhileStatement) enclosingStatement).breakLabel);
+        } else if (enclosingStatement instanceof JSwitchStatement) {
+            output.addBranchInstruction(GOTO, ((JSwitchStatement) enclosingStatement).breakLabel);
+        } else if (enclosingStatement instanceof JForStatement) {
+            output.addBranchInstruction(GOTO, ((JForStatement) enclosingStatement).breakLabel);
+        }
     }
 
     /**

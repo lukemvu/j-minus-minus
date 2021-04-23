@@ -2,6 +2,8 @@
 
 package jminusminus;
 
+import java.util.ArrayList;
+
 import static jminusminus.CLConstants.*;
 
 /**
@@ -13,6 +15,10 @@ public class JDoStatement extends JStatement {
 
     // Test expression.
     private JExpression condition;
+
+    // Break statement.
+    public boolean hasBreak;
+    public String breakLabel;
 
     /**
      * Constructs an AST node for a do-statement.
@@ -31,11 +37,11 @@ public class JDoStatement extends JStatement {
      * {@inheritDoc}
      */
     public JStatement analyze(Context context) {
-        // TODO
+        JMember.enclosingStatement.push(this);
         body = (JStatement) body.analyze(context);
         condition = (JExpression) condition.analyze(context);
         condition.type().mustMatchExpected(line(), Type.BOOLEAN);
-
+        JMember.enclosingStatement.pop();
         return this;
     }
 
@@ -43,10 +49,16 @@ public class JDoStatement extends JStatement {
      * {@inheritDoc}
      */
     public void codegen(CLEmitter output) {
+        if (hasBreak) {
+            breakLabel = output.createLabel();
+        }
         String bodyLabel = output.createLabel();
         output.addLabel(bodyLabel);
         body.codegen(output);
         condition.codegen(output, bodyLabel, true);
+        if (hasBreak) {
+            output.addLabel(breakLabel);
+        }
     }
 
     /**
