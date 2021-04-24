@@ -49,28 +49,14 @@
       From office hours the error was from a typo in a store instruction; I was
       storing an int instead of a long as was required.
 
-      - issues with testing Stats.java
-      - got some errors related to parsing; swapped in working Parser
-      - run into this issue
+      I ran into some issues with parsing when I saw parsing errors in the
+      output. I swapped in the corrected copy of Parser.java and fixed that
+      issue. I ran into this error below:
 
-      luke@luke-elementaryos-desktop:~/workspace/j--$ bash ./bin/j-- project5/Stats.java
-      Exception in thread "main" java.lang.VerifyError: (class: Stats, method: stddev signature: ([D)D) Expecting to find double on stack
-              at java.base/java.lang.Class.getDeclaredMethods0(Native Method)
-              at java.base/java.lang.Class.privateGetDeclaredMethods(Class.java:3166)
-              at java.base/java.lang.Class.getDeclaredMethods(Class.java:2309)
-              at jminusminus.Type.methodFor(Type.java:438)
-              at jminusminus.JMessageExpression.analyze(JMessageExpression.java:107)
-              at jminusminus.JAssignOp.analyze(JAssignment.java:48)
-              at jminusminus.JStatementExpression.analyze(JStatementExpression.java:31)
-              at jminusminus.JVariableDeclaration.analyze(JVariableDeclaration.java:64)
-              at jminusminus.JVariableDeclaration.analyze(JVariableDeclaration.java:12)
-              at jminusminus.JBlock.analyze(JBlock.java:45)
-              at jminusminus.JMethodDeclaration.analyze(JMethodDeclaration.java:155)
-              at jminusminus.JClassDeclaration.analyze(JClassDeclaration.java:166)
-              at jminusminus.JCompilationUnit.analyze(JCompilationUnit.java:157)
-              at jminusminus.Main.main(Main.java:131)
+      (class: Stats, method: stddev signature: ([D)D)
+      Expecting to find double on stack
 
-        - issue in jAriableDeclaration or JMethod Declaration?
+      There was typo in JMethodDeclaration, LCONST_0 should have been DCONST_0.
 
    Problem 2 (Operators)
       Approach:

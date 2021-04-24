@@ -39,8 +39,7 @@ class JVariableDeclaration extends JStatement {
             LocalVariableDefn defn = new LocalVariableDefn(decl.type().resolve(context), offset);
 
             // Skip an offset for longs and doubles
-            if (decl.type().resolve(context) == Type.DOUBLE ||
-                    decl.type().resolve(context) == Type.LONG) {
+            if (decl.type().resolve(context) == Type.DOUBLE || decl.type().resolve(context) == Type.LONG) {
                 ((LocalContext) context).nextOffset();
             }
 
